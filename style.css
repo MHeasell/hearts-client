@@ -1,0 +1,49 @@
+.hand {
+    list-style-type: none;
+    overflow: auto;
+}
+
+.hand li {
+    position: relative;
+    float: left;
+    margin-left: -55px;
+    margin-top: 10px;
+}
+
+.hand li:hover {
+
+}
+
+.hand li:hover::before {
+    content: '';
+    display: block;
+    width: 71px;
+    height: 96px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: blue;
+    opacity: 0.2;
+}
+
+.hand li:first-child {
+    margin-left: 0;
+}
+
+.hand li.selected {
+    margin-top: 0px;
+}
+
+.playArea {
+    position: relative;
+    width: 130px;
+    height: 160px;
+}
+
+#queueLoadingLabel {
+    display: none;
+}
+
+#gameView {
+    display: none;
+}
