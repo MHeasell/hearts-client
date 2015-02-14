@@ -59,7 +59,7 @@ $(function() {
                 promise.done(function (data) {
                     if (data["matched"]) {
                         var gameLink = data["link"];
-                        setComponent("gameView", { link: gameLink, ticket: self.authTicket });
+                        setComponent("gameView", { link: gameLink, ticket: self.authTicket, name: self.name() });
                     }
                     else {
                         pollQueue();
@@ -85,9 +85,9 @@ $(function() {
 
         this.gameState = ko.observable("passing");
 
-        this.name = "Steve";
+        this.name = params.name;
 
-        this.playerNumber = 1;
+        this.playerNumber = null;
 
         this.passEnabled = ko.computed(function() {
             return this.selectedCards().length == 3;
