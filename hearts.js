@@ -90,7 +90,7 @@ $(function() {
         this.playerNumber = null;
 
         this.passEnabled = ko.computed(function() {
-            return this.selectedCards().length == 3;
+            return this.selectedCards().length === 3;
         }, this);
 
         var authTicket = params.ticket;
