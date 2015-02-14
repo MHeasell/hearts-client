@@ -113,7 +113,7 @@ $(function() {
             ourPlayerNumber = players.indexOf(playerName);
             $playersList.empty();
             for (var i = 0; i < players.length; i++) {
-                $playersList.append('<li>'+players[i]+'</li>')
+                $playersList.append('<li>'+players[i]+'</li>');
             }
         });
     }
