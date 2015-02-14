@@ -6,120 +6,163 @@ var queueAddress = serverAddress + "/queue";
 $(function() {
     "use strict";
 
-    var $queueButton = $("#queueButton");
-    var $queueLoadingLabel = $("#queueLoadingLabel");
-    var $gameView = $("#gameView");
-    var $welcomeView = $("#welcomeView");
-    var $playerNameInput = $("#playerNameInput");
+    function MainModel() {
+        this.componentInfo = ko.observable({name:'queueView', params: {}});
+    }
 
-    var $playersList = $("#playersList");
-    var $playerHand = $("#playerHand");
+    var mainModel = new MainModel();
 
-    var $passButton = $("#passButton");
+    function setComponent(name, params) {
+        mainModel.componentInfo({name: name, params: params});
+    }
 
-    var playerName;
+    function QueueViewModel() {
+        this.name = ko.observable("Steve");
 
-    var players;
-    var ourPlayerNumber;
+        this.state = ko.observable("ready");
 
-    var authTicket;
+        this.canEditPlayerName = ko.computed(function() {
+            return this.state() === "ready";
+        }, this);
 
-    var gameLink;
+        this.queueButtonEnabled = ko.computed(function() {
+            return this.state() === "ready";
+        }, this);
 
-    var gameState = "passing";
+        this.showLoadingMessage = ko.computed(function() {
+            return this.state() === "queuing";
+        }, this);
 
-    var selectedCards = [];
+        var authTicket = null;
 
-    $queueButton.click(function() {
-        var name = $playerNameInput.val();
-        var data = { "name": name };
-        var promise = $.post(serverAddress + "/queue", data);
-        promise.done(function(data) {
-            $queueButton.prop("disabled", true);
-            $queueLoadingLabel.show();
-            playerName = name;
-            authTicket = data["ticket"];
-            pollQueue();
-        });
-    });
+        var self = this;
 
-    function pollQueue() {
-        setTimeout(function() {
-            var data = {"ticket": authTicket};
-            var promise = $.get(queueAddress + "/" + playerName, data);
-            promise.done(function (data) {
-                if (data["matched"]) {
-                    gameLink = data["link"];
-                    goToGameState();
-                }
-                else {
-                    pollQueue();
-                }
+        this.queue = function () {
+            var data = { "name": this.name() };
+            var promise = $.post(serverAddress + "/queue", data);
+            this.state("sendingRequest");
+
+            promise.done(function(data) {
+                self.state("queuing");
+                self.authTicket = data["ticket"];
+                pollQueue();
             });
-        }, 5000);
-    }
+            promise.fail(function() {
+                self.state("ready");
+            });
+        };
 
-    function goToGameState() {
-        $welcomeView.hide();
-        $gameView.show();
-        fetchGameData();
-    }
-
-    function cardClick() {
-        /* jshint validthis: true */
-        var val = $(this).data("value");
-        if (gameState == "passing") {
-            var idx = selectedCards.indexOf(val);
-            if (idx >= 0) {
-                selectedCards.splice(idx, 1);
-                $(this).removeClass("selected");
-            }
-            else {
-                selectedCards.push(val);
-                $(this).addClass("selected");
-            }
-
-            $passButton.prop("disabled", selectedCards.length != 3);
+        function pollQueue() {
+            setTimeout(function() {
+                var data = {"ticket": self.authTicket};
+                var promise = $.get(queueAddress + "/" + self.name(), data);
+                promise.done(function (data) {
+                    if (data["matched"]) {
+                        var gameLink = data["link"];
+                        setComponent("gameView", { link: gameLink, ticket: self.authTicket });
+                    }
+                    else {
+                        pollQueue();
+                    }
+                });
+            }, 5000);
         }
     }
 
-    $passButton.click(function() {
-        var passPlayerNumber = (ourPlayerNumber + 1) % 4;
-        var passPlayerName = players[passPlayerNumber];
-        var data = { "card1": selectedCards[0], "card2": selectedCards[1], "card3": selectedCards[2] };
-        var promise = $.post(serverAddress + gameLink + "/players/" + passPlayerName + "/passed_cards?ticket=" + authTicket, data);
-        promise.done(function(data) {
-            alert("you passed some cards");
-        });
+    function GameViewModel(params) {
+        var self = this;
+
+        this.hand = ko.observableArray();
+        this.pile = ko.observableArray([
+            { card: "c6", position: "left" },
+            { card: "d9", position: "across" },
+            { card: "sk", position: "right" }
+        ]);
+
+        this.players = ko.observableArray();
+
+        this.selectedCards = ko.observableArray();
+
+        this.gameState = ko.observable("passing");
+
+        this.name = "Steve";
+
+        this.playerNumber = 1;
+
+        this.passEnabled = ko.computed(function() {
+            return this.selectedCards().length == 3;
+        }, this);
+
+        var authTicket = params.ticket;
+        var gameLink = params.link;
+
+        this.clickCard = function(val) {
+            if (self.gameState() === "passing") {
+                var idx = self.selectedCards.indexOf(val);
+                if (idx >= 0) {
+                    self.selectedCards.splice(idx, 1);
+                }
+                else {
+                    self.selectedCards.push(val);
+                }
+            }
+        };
+
+        this.passCards = function() {
+            var passPlayerNumber = (this.playerNumber + 1) % 4;
+            var passPlayerName = this.players()[passPlayerNumber];
+            var selectedCards = this.selectedCards();
+            var data = {
+                "card1": selectedCards[0],
+                "card2": selectedCards[1],
+                "card3": selectedCards[2]
+            };
+            var promise = $.post(
+                serverAddress + gameLink + "/players/" + passPlayerName + "/passed_cards?ticket=" + authTicket,
+                data);
+            promise.done(function(data) {
+                alert("you passed some cards");
+            });
+            promise.fail(function() {
+                alert("Failed to pass cards!");
+            });
+        };
+
+        function fetchGameData() {
+            var data = { "ticket": authTicket };
+
+            // fetch hand
+            var promise = $.get(
+                serverAddress + gameLink + "/players/" + self.name + "/hand",
+                data);
+            promise.done(function(data) {
+                var cards = data["cards"];
+                self.hand(cards);
+            });
+
+            // fetch players list
+            var playerPromise = $.get(serverAddress + gameLink + "/players");
+            playerPromise.done(function(data) {
+                var players = data["players"];
+                self.players(players);
+                self.playerNumber = players.indexOf(self.name);
+            });
+        }
+
+        fetchGameData();
+    }
+
+    ko.components.register('queueView', {
+        viewModel: QueueViewModel,
+        template: { element: 'queueTemplate' }
     });
 
-    function fetchGameData() {
-        var data = { "ticket": authTicket };
-        var promise = $.get(serverAddress + gameLink + "/players/" + playerName + "/hand", data);
-        promise.done(function(data) {
-            var cards = data["cards"];
-            $playerHand.empty();
-            for (var i = 0; i < cards.length; i++) {
-                var c = cards[i];
-                var $card = $('<li></li>');
-                $card.addClass("card");
-                $card.addClass("card-" + c);
-                $card.data("value", c);
-                $card.click(cardClick);
-                $playerHand.append($card);
-            }
-        });
+    ko.components.register('gameView', {
+        viewModel: GameViewModel,
+        template: { element: 'gameTemplate' }
+    });
 
-        var playerPromise = $.get(serverAddress + gameLink + "/players");
-        playerPromise.done(function(data) {
-            players = data["players"];
-            ourPlayerNumber = players.indexOf(playerName);
-            $playersList.empty();
-            for (var i = 0; i < players.length; i++) {
-                $playersList.append('<li>'+players[i]+'</li>');
-            }
-        });
-    }
+    ko.applyBindings(mainModel);
 });
 
 

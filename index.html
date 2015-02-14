@@ -17,45 +17,42 @@
 <body>
 
 <div class="container">
-
-    <div id="welcomeView">
-        <h1>Welcome!</h1>
-
-        <p>Play Hearts with strangers!</p>
-
-        <label for="playerNameInput">Name:</label>
-        <input id="playerNameInput" type="text" />
-        <button id="queueButton" class="btn btn-primary">Queue for Game</button>
-        <div id="queueLoadingLabel">Waiting for game...</div>
-    </div>
-    <div id="gameView">
-        <h1>Hearts Game</h1>
-
-        <p>Players:</p>
-        <ul id="playersList">
-
-        </ul>
-
-        <h2>Cards Played</h2>
-
-        <div class="playArea">
-            <div class="card card-right card-cj"></div>
-            <div class="card card-across card-s5"></div>
-            <div class="card card-left card-d3"></div>
-            <div class="card card-yours card-d3"></div>
-        </div>
-
-        <h2>Your Hand</h2>
-        <ul id="playerHand" class="hand">
-            <li class="card card-c2"></li>
-            <li class="card card-hk"></li>
-            <li class="card card-d4"></li>
-        </ul>
-
-        <button id="passButton" disabled>Pass</button>
-    </div>
+    <div class="component" data-bind="component: { name: componentInfo().name, params: componentInfo().params }"></div>
 </div>
 
+
+<template id="queueTemplate">
+    <h1>Welcome!</h1>
+
+    <p>Play Hearts with strangers!</p>
+
+    <label for="playerNameInput">Name:</label>
+    <input id="playerNameInput" type="text" data-bind="value: name, enable: canEditPlayerName" />
+    <button class="btn btn-primary" data-bind="click: queue, enable: queueButtonEnabled">Queue for Game</button>
+    <div data-bind="visible: showLoadingMessage">Waiting for game...</div>
+</template>
+
+<template id="gameTemplate">
+    <h1>Hearts Game</h1>
+
+    <p>Players:</p>
+    <ul data-bind="foreach: players">
+        <li data-bind="text: $data"></li>
+    </ul>
+
+    <h2>Cards Played</h2>
+
+    <div class="playArea" data-bind="foreach: pile">
+        <div class="card" data-bind="css: 'card-' + position + ' card-' + card"></div>
+    </div>
+
+    <h2>Your Hand</h2>
+    <ul class="hand" data-bind="foreach: hand">
+        <li data-bind="attr: { class: 'card card-' + $data }, css: { selected: $parent.selectedCards.indexOf($data) !== -1 }, click: $parent.clickCard"></li>
+    </ul>
+
+    <button data-bind="click: passCards, enable: passEnabled">Pass</button>
+</template>
 
 </body>
 </html>
