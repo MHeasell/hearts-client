@@ -121,7 +121,9 @@ $(function() {
                 serverAddress + gameLink + "/players/" + passPlayerName + "/passed_cards?ticket=" + authTicket,
                 data);
             promise.done(function(data) {
-                alert("you passed some cards");
+                self.hand.removeAll(selectedCards);
+                self.gameState("waiting-for-pass");
+                // TODO: start waiting for cards to be passed to us
             });
             promise.fail(function() {
                 alert("Failed to pass cards!");
