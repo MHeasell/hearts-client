@@ -66,6 +66,7 @@ $(function() {
     }
 
     function cardClick() {
+        /* jshint validthis: true */
         var val = $(this).data("value");
         if (gameState == "passing") {
             var idx = selectedCards.indexOf(val);
