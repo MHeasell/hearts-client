@@ -89,6 +89,10 @@ $(function() {
 
         this.playerNumber = null;
 
+        this.passAvailable = ko.computed(function() {
+            return this.gameState() === "passing";
+        }, this);
+
         this.passEnabled = ko.computed(function() {
             return this.selectedCards().length === 3;
         }, this);

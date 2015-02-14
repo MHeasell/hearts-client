@@ -51,7 +51,7 @@
         <li data-bind="attr: { class: 'card card-' + $data }, css: { selected: $parent.selectedCards.indexOf($data) !== -1 }, click: $parent.clickCard"></li>
     </ul>
 
-    <button data-bind="click: passCards, enable: passEnabled">Pass</button>
+    <button data-bind="click: passCards, enable: passEnabled, visible: passAvailable">Pass</button>
 </template>
 
 </body>
