@@ -4,6 +4,8 @@ var serverAddress = "http://192.168.254.134:5000";
 var queueAddress = serverAddress + "/queue";
 
 $(function() {
+    "use strict";
+
     var $queueButton = $("#queueButton");
     var $queueLoadingLabel = $("#queueLoadingLabel");
     var $gameView = $("#gameView");
