@@ -1,0 +1,8 @@
+<h1>Welcome!</h1>
+
+<p>Play Hearts with strangers!</p>
+
+<label for="playerNameInput">Name:</label>
+<input id="playerNameInput" type="text" data-bind="value: name, enable: canEditPlayerName" />
+<button class="btn btn-primary" data-bind="click: queue, enable: queueButtonEnabled">Queue for Game</button>
+<div data-bind="visible: showLoadingMessage">Waiting for game...</div>
