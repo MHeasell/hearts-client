@@ -23,9 +23,11 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
 
         var manager = params.manager;
 
+        var service = params.service;
+
         this.queue = function () {
-            var data = { "name": this.name() };
-            var promise = $.post(manager.serverAddress + "/queue", data);
+            var promise = service.joinQueue(this.name());
+
             this.state("sendingRequest");
 
             promise.done(function(data) {
@@ -33,6 +35,7 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
                 self.authTicket = data["ticket"];
                 pollQueue();
             });
+
             promise.fail(function() {
                 self.state("ready");
             });
@@ -40,16 +43,24 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
 
         function pollQueue() {
             setTimeout(function() {
-                var data = {"ticket": self.authTicket};
-                var promise = $.get(manager.serverAddress + "/queue/" + self.name(), data);
+                var promise = service.getQueueStatus(self.name(), self.authTicket);
                 promise.done(function (data) {
                     if (data["matched"]) {
-                        var gameLink = data["link"];
-                        manager.setComponent("gameView", { link: gameLink, ticket: self.authTicket, name: self.name() });
+                        var gameSvc = service.createGameService(data["link"]);
+                        manager.setComponent(
+                            "gameView",
+                            {
+                                service: gameSvc,
+                                ticket: self.authTicket,
+                                name: self.name()
+                            });
                     }
                     else {
                         pollQueue();
                     }
+                });
+                promise.fail(function() {
+                    alert("Failed to poll queue!");
                 });
             }, 5000);
         }

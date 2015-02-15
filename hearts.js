@@ -10,15 +10,22 @@ require.config({
     }
 });
 
-require(['jquery', 'knockout', 'bootstrap'], function($, ko) {
+require(['jquery', 'knockout', 'mockQueueService', 'bootstrap'], function($, ko, QueueService) {
 
     $(function() {
         "use strict";
 
-        function MainModel() {
-            this.componentInfo = ko.observable({name:'queueView', params: { manager: this }});
+        var serverAddress = "http://192.168.254.134:5000";
 
-            this.serverAddress = "http://192.168.254.134:5000";
+        function MainModel() {
+
+            this.componentInfo = ko.observable({
+                name:'queueView',
+                params: {
+                    manager: this,
+                    service: new QueueService(serverAddress)
+                }
+            });
 
             this.setComponent = function(name, params) {
                 params.manager = this;

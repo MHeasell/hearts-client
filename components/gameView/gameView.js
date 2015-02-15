@@ -29,8 +29,8 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
         }, this);
 
         var authTicket = params.ticket;
-        var gameLink = params.link;
         var manager = params.manager;
+        var service = params.service;
 
         this.clickCard = function(val) {
             if (self.gameState() === "passing") {
@@ -48,43 +48,38 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
             var passPlayerNumber = (this.playerNumber + 1) % 4;
             var passPlayerName = this.players()[passPlayerNumber];
             var selectedCards = this.selectedCards();
-            var data = {
-                "card1": selectedCards[0],
-                "card2": selectedCards[1],
-                "card3": selectedCards[2]
-            };
-            var promise = $.post(
-                manager.serverAddress + gameLink + "/players/" + passPlayerName + "/passed_cards?ticket=" + authTicket,
-                data);
-            promise.done(function(data) {
-                self.hand.removeAll(selectedCards);
-                self.gameState("waiting-for-pass");
-                // TODO: start waiting for cards to be passed to us
-            });
-            promise.fail(function() {
-                alert("Failed to pass cards!");
-            });
+
+            service.passCards(passPlayerName, selectedCards, authTicket)
+                .done(function() {
+                    self.hand.removeAll(selectedCards);
+                    self.gameState("waiting-for-pass");
+                    // TODO: start waiting for cards to be passed to us
+                })
+                .fail(function() {
+                    alert("Failed to pass cards!");
+                });
         };
 
         function fetchGameData() {
             var data = { "ticket": authTicket };
 
             // fetch hand
-            var promise = $.get(
-                manager.serverAddress + gameLink + "/players/" + self.name + "/hand",
-                data);
-            promise.done(function(data) {
-                var cards = data["cards"];
-                self.hand(cards);
-            });
+            service.getHand(self.name, authTicket)
+                .done(function(data) {
+                    var cards = data["cards"];
+                    self.hand(cards);
+                })
+                .fail(function() {
+                    alert("Failed to get hand!");
+                });
 
             // fetch players list
-            var playerPromise = $.get(manager.serverAddress + gameLink + "/players");
-            playerPromise.done(function(data) {
-                var players = data["players"];
-                self.players(players);
-                self.playerNumber = players.indexOf(self.name);
-            });
+            service.getPlayers()
+                .done(function(data) {
+                    var players = data["players"];
+                    self.players(players);
+                    self.playerNumber = players.indexOf(self.name);
+                });
         }
 
         fetchGameData();
