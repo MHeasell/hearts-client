@@ -4,15 +4,14 @@
 }
 
 .card-left {
-
     position: absolute;
-    left: 0px;
+    left: 0;
     top: 20px;
 }
 
 .card-right {
     position: absolute;
-    right: 0px;
+    right: 0;
     bottom: 20px;
 }
 
