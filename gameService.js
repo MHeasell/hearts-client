@@ -7,15 +7,13 @@ define(['jquery'], function($) {
 
         this.getHand = function(name, ticket) {
             var data = { "ticket": ticket };
-            var promise = $.get(
+            return $.get(
                 gameAddress + "/players/" + name + "/hand",
                 data);
-            return promise;
         };
 
         this.getPlayers = function() {
-            var promise = $.get(gameAddress + "/players");
-            return promise;
+            return $.get(gameAddress + "/players");
         };
 
         this.passCards = function(targetName, cards, ticket) {
@@ -25,10 +23,9 @@ define(['jquery'], function($) {
                 card3: cards[2]
             };
 
-            var promise = $.post(
+            return $.post(
                 gameAddress + "/players/" + targetName + "/passed_cards?ticket=" + ticket,
                 data);
-            return promise;
         };
 
         this.getPassedCards = function(name, ticket) {
@@ -37,10 +34,9 @@ define(['jquery'], function($) {
 
         this.addCardToPile = function(pileNumber, name, card, ticket) {
             var data = { "player": name, "card": card };
-            var promise = $.post(
+            return $.post(
                 gameAddress + "/piles/" + pileNumber + "?ticket=" + ticket,
                 data);
-            return promise;
         };
 
         this.getPileCard = function(pileNumber, cardNumber) {
