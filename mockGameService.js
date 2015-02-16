@@ -80,6 +80,10 @@ define(['jquery'], function($) {
 
             return defer.promise();
         };
+
+        this.waitForPileCard = function(pileNumber, cardNumber) {
+            return this.getPileCard(pileNumber, cardNumber);
+        };
     }
 
     return MockGameService;

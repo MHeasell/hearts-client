@@ -1,6 +1,9 @@
 define(['jquery'], function($) {
 
+    var POLL_INTERVAL = 5000;
+
     function GameService(gameAddress) {
+        var self = this;
 
         this.getHand = function(name, ticket) {
             var data = { "ticket": ticket };
@@ -42,6 +45,27 @@ define(['jquery'], function($) {
 
         this.getPileCard = function(pileNumber, cardNumber) {
             return $.get(gameAddress + "/piles/" + pileNumber + "/" + cardNumber);
+        };
+
+        this.waitForPileCard = function(pileNumber, cardNumber) {
+            var defer = $.Deferred();
+
+            (function pollPile() {
+                self.getPileCard(pileNumber, cardNumber)
+                    .done(function(data) {
+                        defer.resolve(data);
+                    })
+                    .fail(function(xhr) {
+                        if (xhr.status === 404) {
+                            setTimeout(pollPile, POLL_INTERVAL);
+                        }
+                        else {
+                            defer.reject();
+                        }
+                    });
+            })();
+
+            return defer.promise();
         };
     }
 

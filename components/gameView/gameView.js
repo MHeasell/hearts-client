@@ -90,41 +90,37 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
             return positions[diff];
         }
 
-        function pollNextPileCard() {
-            setTimeout(function() {
-                service.getPileCard(pileNumber, nextCardNumber)
-                    .done(function(data) {
-                        var pos = getPlayerPositionDescription(data["player"]);
-                        self.pile.push({
-                            "position": pos,
-                            "card": data["card"]
-                        });
-                        nextCardNumber += 1;
-
-                        if (self.pile().length === 4) {
-                            endPile();
-                        }
-                        else if (pos === "right") {
-                            self.gameState("our-turn");
-                        }
-                        else {
-                            waitForOtherPlayerMoves();
-                        }
-                    })
-                    .fail(function(xhr) {
-                        if (xhr.status === 404) {
-                            pollNextPileCard();
-                        }
-                        else {
-                            alert("Failed to poll for pile card!");
-                        }
-                    });
-            }, POLL_INTERVAL);
-        }
-
         function waitForOtherPlayerMoves() {
             self.gameState("waiting-for-moves");
-            pollNextPileCard();
+
+            service.waitForPileCard(pileNumber, nextCardNumber)
+                .done(function(data) {
+                    onReceiveNextPileCard(data["player"], data["card"]);
+                })
+                .fail(function() {
+                    alert("Failed to get next pile card!");
+                });
+        }
+
+        function onReceiveNextPileCard(playerName, card) {
+            var pos = getPlayerPositionDescription(playerName);
+
+            self.pile.push({
+                "position": pos,
+                "card": card
+            });
+
+            nextCardNumber += 1;
+
+            if (self.pile().length === 4) {
+                endPile();
+            }
+            else if (pos === "right") {
+                self.gameState("our-turn");
+            }
+            else {
+                waitForOtherPlayerMoves();
+            }
         }
 
         this.confirmReceiveCards = function() {
