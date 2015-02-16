@@ -5,10 +5,10 @@ define(['jquery'], function($) {
     function GameService(gameAddress) {
         var self = this;
 
-        this.getHand = function(name, ticket) {
+        this.getHand = function(roundNumber, name, ticket) {
             var data = { "ticket": ticket };
             return $.get(
-                gameAddress + "/players/" + name + "/hand",
+                gameAddress + "/rounds/" + roundNumber + "/players/" + name + "/hand",
                 data);
         };
 
@@ -16,7 +16,7 @@ define(['jquery'], function($) {
             return $.get(gameAddress + "/players");
         };
 
-        this.passCards = function(targetName, cards, ticket) {
+        this.passCards = function(roundNumber, targetName, cards, ticket) {
             var data = {
                 card1: cards[0],
                 card2: cards[1],
@@ -24,30 +24,30 @@ define(['jquery'], function($) {
             };
 
             return $.post(
-                gameAddress + "/players/" + targetName + "/passed_cards?ticket=" + ticket,
+                gameAddress + "/rounds/" + roundNumber + "/players/" + targetName + "/passed_cards?ticket=" + ticket,
                 data);
         };
 
-        this.getPassedCards = function(name, ticket) {
-            return $.get(gameAddress + "/players"/ + name + "/passed_cards?ticket=" + ticket);
+        this.getPassedCards = function(roundNumber, name, ticket) {
+            return $.get(gameAddress + "/rounds/" + roundNumber + "/players/" + name + "/passed_cards?ticket=" + ticket);
         };
 
-        this.addCardToPile = function(pileNumber, name, card, ticket) {
+        this.addCardToPile = function(roundNumber, pileNumber, name, card, ticket) {
             var data = { "player": name, "card": card };
             return $.post(
-                gameAddress + "/piles/" + pileNumber + "?ticket=" + ticket,
+                gameAddress + "/rounds/" + roundNumber + "/piles/" + pileNumber + "?ticket=" + ticket,
                 data);
         };
 
-        this.getPileCard = function(pileNumber, cardNumber) {
-            return $.get(gameAddress + "/piles/" + pileNumber + "/" + cardNumber);
+        this.getPileCard = function(roundNumber, pileNumber, cardNumber) {
+            return $.get(gameAddress + "/rounds/" + roundNumber + "/piles/" + pileNumber + "/" + cardNumber);
         };
 
-        this.waitForPileCard = function(pileNumber, cardNumber) {
+        this.waitForPileCard = function(roundNumber, pileNumber, cardNumber) {
             var defer = $.Deferred();
 
             (function pollPile() {
-                self.getPileCard(pileNumber, cardNumber)
+                self.getPileCard(roundNumber, pileNumber, cardNumber)
                     .done(function(data) {
                         defer.resolve(data);
                     })
@@ -64,11 +64,11 @@ define(['jquery'], function($) {
             return defer.promise();
         };
 
-        this.waitForPassedCards = function(name, ticket) {
+        this.waitForPassedCards = function(roundNumber, name, ticket) {
             var defer = $.Deferred();
 
             (function pollPassedCards() {
-                self.getPassedCards(name, ticket)
+                self.getPassedCards(roundNumber, name, ticket)
                     .done(function(data) {
                         if (data["passed"]) {
                             defer.resolve(data);

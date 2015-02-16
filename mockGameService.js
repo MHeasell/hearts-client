@@ -2,7 +2,7 @@ define(['jquery'], function($) {
 
     function MockGameService() {
 
-        this.getHand = function(name, ticket) {
+        this.getHand = function(roundNumber, name, ticket) {
             var defer = $.Deferred();
 
             defer.resolve({ "cards": [
@@ -32,7 +32,7 @@ define(['jquery'], function($) {
             return defer.promise();
         };
 
-        this.passCards = function(targetName, cards, ticket) {
+        this.passCards = function(roundNumber, targetName, cards, ticket) {
 
             var defer = $.Deferred();
 
@@ -41,7 +41,7 @@ define(['jquery'], function($) {
             return defer.promise();
         };
 
-        this.getPassedCards = function(name, ticket) {
+        this.getPassedCards = function(roundNumber, name, ticket) {
             var defer = $.Deferred();
 
             defer.resolve({
@@ -54,7 +54,7 @@ define(['jquery'], function($) {
             return defer.promise();
         };
 
-        this.addCardToPile = function(pileNumber, name, card, ticket) {
+        this.addCardToPile = function(roundNumber, pileNumber, name, card, ticket) {
             var defer = $.Deferred();
 
             defer.resolve({ "success": true });
@@ -62,7 +62,7 @@ define(['jquery'], function($) {
             return defer.promise();
         };
 
-        this.getPileCard = function(pileNumber, cardNumber) {
+        this.getPileCard = function(roundNumber, pileNumber, cardNumber) {
             var defer = $.Deferred();
 
             if (cardNumber === 1) {
@@ -81,11 +81,11 @@ define(['jquery'], function($) {
             return defer.promise();
         };
 
-        this.waitForPileCard = function(pileNumber, cardNumber) {
-            return this.getPileCard(pileNumber, cardNumber);
+        this.waitForPileCard = function(roundNumber, pileNumber, cardNumber) {
+            return this.getPileCard(roundNumber, pileNumber, cardNumber);
         };
 
-        this.waitForPassedCards = function(name, ticket) {
+        this.waitForPassedCards = function(roundNumber, name, ticket) {
             var defer = $.Deferred();
 
             defer.resolve({

@@ -12,7 +12,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
         this.selectedCards = ko.observableArray();
 
-        this.gameState = ko.observable("passing");
+        this.gameState = ko.observable("init");
 
         this.name = params.name;
 
@@ -36,6 +36,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
         var pileNumber = null;
         var nextCardNumber = null;
+        var roundNumber = 0;
 
         function startPile() {
             if (pileNumber === null) {
@@ -58,11 +59,15 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
         function endRound() {
             alert("end round");
+
+            // TODO: calculate scores,
+            // determine whether to continue playing
+            // or if the game is over.
         }
 
         function endPile() {
 
-            // TODO: figure out who won, add to score
+            // TODO: figure out who won and who starts next round
 
             // wait a bit so the player can see the result
             setTimeout(function() {
@@ -92,7 +97,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
         function waitForOtherPlayerMoves() {
             self.gameState("waiting-for-moves");
 
-            service.waitForPileCard(pileNumber, nextCardNumber)
+            service.waitForPileCard(roundNumber, pileNumber, nextCardNumber)
                 .done(function(data) {
                     onReceiveNextPileCard(data["player"], data["card"]);
                 })
@@ -149,7 +154,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                     return;
                 }
 
-                service.addCardToPile(pileNumber, self.name, val, authTicket)
+                service.addCardToPile(roundNumber, pileNumber, self.name, val, authTicket)
                     .done(function() {
                         self.pile.push({ card: val, position: "yours" });
                         self.hand.remove(val);
@@ -172,7 +177,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
             var passPlayerName = this.players()[passPlayerNumber];
             var selectedCards = this.selectedCards();
 
-            service.passCards(passPlayerName, selectedCards, authTicket)
+            service.passCards(roundNumber, passPlayerName, selectedCards, authTicket)
                 .done(function() {
                     onPassedCards();
                 })
@@ -186,7 +191,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
             self.selectedCards.removeAll();
             self.gameState("waiting-for-pass");
 
-            service.waitForPassedCards(self.name, authTicket)
+            service.waitForPassedCards(roundNumber, self.name, authTicket)
                 .done(function(data) {
                     onReceivePassedCards([data["card1"], data["card2"], data["card3"]]);
                 })
@@ -201,27 +206,37 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
             self.gameState("confirm-receive-pass");
         }
 
-        function fetchGameData() {
-            // fetch hand
-            service.getHand(self.name, authTicket)
+        function onReceiveHand(cards) {
+            self.hand(cards);
+            self.gameState("passing");
+        }
+
+        function beginRound() {
+            roundNumber += 1;
+
+            service.getHand(roundNumber, self.name, authTicket)
                 .done(function(data) {
-                    var cards = data["cards"];
-                    self.hand(cards);
+                    onReceiveHand(data["cards"]);
                 })
                 .fail(function() {
                     alert("Failed to get hand!");
                 });
 
+        }
+
+        function beginGame() {
             // fetch players list
             service.getPlayers()
                 .done(function(data) {
                     var players = data["players"];
                     self.players(players);
                     self.playerNumber = players.indexOf(self.name);
+
+                    beginRound();
                 });
         }
 
-        fetchGameData();
+        beginGame();
     }
 
     return { viewModel: GameViewModel, template: tmpl };
