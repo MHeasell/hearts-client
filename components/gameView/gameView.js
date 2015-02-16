@@ -49,7 +49,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
             // if we have the 2 of clubs, we must go first
             if (self.hand.indexOf("c2") !== -1) {
-                self.gameState("our-turn");
+                beginTurn();
             }
             else {
                 waitForOtherPlayerMoves();
@@ -101,6 +101,10 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                 });
         }
 
+        function beginTurn() {
+            self.gameState("our-turn");
+        }
+
         function onReceiveNextPileCard(playerName, card) {
             var pos = getPlayerPositionDescription(playerName);
 
@@ -115,7 +119,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                 endPile();
             }
             else if (pos === "right") {
-                self.gameState("our-turn");
+                beginTurn();
             }
             else {
                 waitForOtherPlayerMoves();
