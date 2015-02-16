@@ -4,11 +4,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
         var self = this;
 
         this.hand = ko.observableArray();
-        this.pile = ko.observableArray([
-            { card: "c6", position: "left" },
-            { card: "d9", position: "across" },
-            { card: "sk", position: "right" }
-        ]);
+        this.pile = ko.observableArray();
 
         this.players = ko.observableArray();
 
@@ -36,18 +32,39 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
         var manager = params.manager;
         var service = params.service;
 
-        function startRound() {
-            alert("round start");
-            // TODO: do start of round stuff,
-            // e.g. figure out whose turn it is
-            // and either allow the player to play a card
-            // or wait for other players to play.
+        var pileNumber = null;
+
+        function startPile() {
+            if (pileNumber === null) {
+                pileNumber = 1;
+            }
+            else {
+                pileNumber += 1;
+            }
+
+            // if we have the 2 of clubs, we must go first
+            if (self.hand.indexOf("c2") !== -1) {
+                self.gameState("our-turn");
+            }
+            else {
+                waitForOtherPlayerMoves();
+            }
+        }
+
+        function endPile() {
+            alert("end pile");
+            // TODO: figure out who won, add to score
+        }
+
+        function waitForOtherPlayerMoves() {
+            self.gameState("waiting-for-moves");
+            alert("wait for other player moves");
+            // TODO: actually poll for other player moves
         }
 
         this.confirmReceiveCards = function() {
             this.selectedCards.removeAll();
-            alert("cards confirmed!");
-            startRound();
+            startPile();
         };
 
         this.clickCard = function(val) {
@@ -59,6 +76,29 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                 else {
                     self.selectedCards.push(val);
                 }
+            }
+            else if (self.gameState() === "our-turn") {
+                if (self.pile().length === 0 &&
+                    self.hand.indexOf("c2") !== -1 &&
+                    val !== "c2") {
+                    alert("You must start with the 2 of clubs.");
+                    return;
+                }
+
+                service.addCardToPile(pileNumber, self.name, val, authTicket)
+                    .done(function() {
+                        self.pile.push({ card: val, position: "yours" });
+                        self.hand.remove(val);
+                        if (self.pile().length === 4) {
+                            endPile();
+                        }
+                        else {
+                            waitForOtherPlayerMoves();
+                        }
+                    })
+                    .fail(function() {
+                        alert("Failed to play card!");
+                    });
             }
         };
 

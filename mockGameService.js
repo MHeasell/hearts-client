@@ -53,6 +53,14 @@ define(['jquery'], function($) {
 
             return defer.promise();
         };
+
+        this.addCardToPile = function(pileNumber, name, card, ticket) {
+            var defer = $.Deferred();
+
+            defer.resolve({ "success": true });
+
+            return defer.promise();
+        };
     }
 
     return MockGameService;

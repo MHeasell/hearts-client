@@ -31,6 +31,14 @@ define(['jquery'], function($) {
         this.getPassedCards = function(name, ticket) {
             return $.get(gameAddress + "/players"/ + name + "/passed_cards?ticket=" + ticket);
         };
+
+        this.addCardToPile = function(pileNumber, name, card, ticket) {
+            var data = { "player": name, "card": card };
+            var promise = $.post(
+                gameAddress + "/piles/" + pileNumber + "?ticket=" + ticket,
+                data);
+            return promise;
+        };
     }
 
     return GameService;
