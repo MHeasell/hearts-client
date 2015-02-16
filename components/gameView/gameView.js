@@ -103,8 +103,6 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
         }
 
         function fetchGameData() {
-            var data = { "ticket": authTicket };
-
             // fetch hand
             service.getHand(self.name, authTicket)
                 .done(function(data) {
