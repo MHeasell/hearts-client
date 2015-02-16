@@ -171,37 +171,31 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
             service.passCards(passPlayerName, selectedCards, authTicket)
                 .done(function() {
-                    self.hand.removeAll(selectedCards);
-                    self.selectedCards.removeAll();
-                    self.gameState("waiting-for-pass");
-                    pollPassedCards();
+                    onPassedCards();
                 })
                 .fail(function() {
                     alert("Failed to pass cards!");
                 });
         };
 
+        function onPassedCards() {
+            self.hand.removeAll(self.selectedCards());
+            self.selectedCards.removeAll();
+            self.gameState("waiting-for-pass");
+
+            service.waitForPassedCards(self.name, authTicket)
+                .done(function(data) {
+                    receivePassedCards([data["card1"], data["card2"], data["card3"]]);
+                })
+                .fail(function() {
+                    alert("Failed to receive passed cards!");
+                });
+        }
+
         function receivePassedCards(cards) {
             self.hand.push.apply(self.hand, cards);
             self.selectedCards(cards);
             self.gameState("confirm-receive-pass");
-        }
-
-        function pollPassedCards() {
-            setTimeout(function() {
-                service.getPassedCards(self.name, authTicket)
-                    .done(function(data) {
-                        if (data["passed"]) {
-                            receivePassedCards([data["card1"], data["card2"], data["card3"]]);
-                        }
-                        else {
-                            pollPassedCards();
-                        }
-                    })
-                    .fail(function() {
-                        alert("Failed to poll for passed cards!");
-                    });
-            }, POLL_INTERVAL);
         }
 
         function fetchGameData() {

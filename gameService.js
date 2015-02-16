@@ -67,6 +67,27 @@ define(['jquery'], function($) {
 
             return defer.promise();
         };
+
+        this.waitForPassedCards = function(name, ticket) {
+            var defer = $.Deferred();
+
+            (function pollPassedCards() {
+                self.getPassedCards(name, ticket)
+                    .done(function(data) {
+                        if (data["passed"]) {
+                            defer.resolve(data);
+                        }
+                        else {
+                            setTimeout(pollPassedCards, POLL_INTERVAL);
+                        }
+                    })
+                    .fail(function() {
+                        defer.reject();
+                    });
+            })();
+
+            return defer.promise();
+        };
     }
 
     return GameService;
