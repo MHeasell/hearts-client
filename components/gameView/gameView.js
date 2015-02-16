@@ -1,6 +1,5 @@
 define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
-    var POLL_INTERVAL = 5000;
     var PILE_END_DELAY = 1000;
 
     function GameViewModel(params) {
