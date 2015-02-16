@@ -5,7 +5,21 @@ define(['jquery'], function($) {
         this.getHand = function(name, ticket) {
             var defer = $.Deferred();
 
-            defer.resolve({ "cards": ["c2", "d5", "d3", "sq"] });
+            defer.resolve({ "cards": [
+                "c2",
+                "d5",
+                "d3",
+                "sq",
+                "s4",
+                "hk",
+                "dj",
+                "s7",
+                "c5",
+                "h2",
+                "sj",
+                "c1",
+                "d8"
+            ] });
 
             return defer.promise();
         };
