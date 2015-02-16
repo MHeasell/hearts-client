@@ -54,9 +54,24 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
             }
         }
 
+        function endRound() {
+            alert("end round");
+        }
+
         function endPile() {
-            alert("end pile");
+
             // TODO: figure out who won, add to score
+
+            // wait a bit so the player can see the result
+            setTimeout(function() {
+                self.pile.removeAll();
+                if (pileNumber === 13) {
+                    endRound();
+                }
+                else {
+                    startPile();
+                }
+            }, 5000);
         }
 
         function getPlayerPositionDescription(playerName) {
