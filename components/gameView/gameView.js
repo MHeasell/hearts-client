@@ -1,5 +1,8 @@
 define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
+    var POLL_INTERVAL = 5000;
+    var PILE_END_DELAY = 1000;
+
     function GameViewModel(params) {
         var self = this;
 
@@ -71,7 +74,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                 else {
                     startPile();
                 }
-            }, 5000);
+            }, PILE_END_DELAY);
         }
 
         function getPlayerPositionDescription(playerName) {
@@ -116,7 +119,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                             alert("Failed to poll for pile card!");
                         }
                     });
-            }, 5000);
+            }, POLL_INTERVAL);
         }
 
         function waitForOtherPlayerMoves() {
@@ -202,7 +205,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                     .fail(function() {
                         alert("Failed to poll for passed cards!");
                     });
-            }, 5000);
+            }, POLL_INTERVAL);
         }
 
         function fetchGameData() {
