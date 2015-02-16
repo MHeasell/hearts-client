@@ -28,9 +28,27 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
             return this.selectedCards().length === 3;
         }, this);
 
+        this.confirmReceiveAvailable = ko.computed(function() {
+            return this.gameState() === "confirm-receive-pass";
+        }, this);
+
         var authTicket = params.ticket;
         var manager = params.manager;
         var service = params.service;
+
+        function startRound() {
+            alert("round start");
+            // TODO: do start of round stuff,
+            // e.g. figure out whose turn it is
+            // and either allow the player to play a card
+            // or wait for other players to play.
+        }
+
+        this.confirmReceiveCards = function() {
+            this.selectedCards.removeAll();
+            alert("cards confirmed!");
+            startRound();
+        };
 
         this.clickCard = function(val) {
             if (self.gameState() === "passing") {
@@ -52,13 +70,37 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
             service.passCards(passPlayerName, selectedCards, authTicket)
                 .done(function() {
                     self.hand.removeAll(selectedCards);
+                    self.selectedCards.removeAll();
                     self.gameState("waiting-for-pass");
-                    // TODO: start waiting for cards to be passed to us
+                    pollPassedCards();
                 })
                 .fail(function() {
                     alert("Failed to pass cards!");
                 });
         };
+
+        function receivePassedCards(cards) {
+            self.hand.push.apply(self.hand, cards);
+            self.selectedCards(cards);
+            self.gameState("confirm-receive-pass");
+        }
+
+        function pollPassedCards() {
+            setTimeout(function() {
+                service.getPassedCards(self.name, authTicket)
+                    .done(function(data) {
+                        if (data["passed"]) {
+                            receivePassedCards([data["card1"], data["card2"], data["card3"]]);
+                        }
+                        else {
+                            pollPassedCards();
+                        }
+                    })
+                    .fail(function() {
+                        alert("Failed to poll for passed cards!");
+                    });
+            }, 5000);
+        }
 
         function fetchGameData() {
             var data = { "ticket": authTicket };

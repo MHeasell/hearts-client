@@ -27,6 +27,10 @@ define(['jquery'], function($) {
                 data);
             return promise;
         };
+
+        this.getPassedCards = function(name, ticket) {
+            return $.get(gameAddress + "/players"/ + name + "/passed_cards?ticket=" + ticket);
+        };
     }
 
     return GameService;

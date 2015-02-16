@@ -40,6 +40,19 @@ define(['jquery'], function($) {
 
             return defer.promise();
         };
+
+        this.getPassedCards = function(name, ticket) {
+            var defer = $.Deferred();
+
+            defer.resolve({
+                "passed": true,
+                "card1": "h1",
+                "card2": "cj",
+                "card3": "d1"
+            });
+
+            return defer.promise();
+        };
     }
 
     return MockGameService;
