@@ -17,6 +17,12 @@ define(['jquery', 'mockGameService'], function($, MockGameService) {
         this.createGameService = function(link) {
             return new MockGameService();
         };
+
+        this.waitForGame = function(name, ticket) {
+            var defer = $.Deferred();
+            defer.resolve({ "matched": true, "link": "fake-link" });
+            return defer.promise();
+        };
     }
 
     return MockQueueService;

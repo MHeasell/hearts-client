@@ -1,6 +1,9 @@
 define(['jquery', 'gameService'], function($, GameService) {
 
+    var POLL_INTERVAL = 5000;
+
     function QueueService(serverAddress) {
+        var self = this;
 
         this.joinQueue = function(name) {
             var data = { "name": name };
@@ -14,6 +17,27 @@ define(['jquery', 'gameService'], function($, GameService) {
 
         this.createGameService = function(link) {
             return new GameService(serverAddress + link);
+        };
+
+        this.waitForGame = function(name, ticket) {
+            var defer = $.Deferred();
+
+            (function pollQueue() {
+                self.getQueueStatus(name, ticket)
+                    .done(function (data) {
+                        if (data["matched"]) {
+                            defer.resolve(data);
+                        }
+                        else {
+                            setTimeout(pollQueue, POLL_INTERVAL);
+                        }
+                    })
+                    .fail(function() {
+                        defer.reject();
+                    });
+            })();
+
+            return defer.promise();
         };
     }
 

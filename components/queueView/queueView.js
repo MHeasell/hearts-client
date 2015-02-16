@@ -31,9 +31,7 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
             this.state("sendingRequest");
 
             promise.done(function(data) {
-                self.state("queuing");
-                self.authTicket = data["ticket"];
-                pollQueue();
+                onEnterQueue(data["ticket"]);
             });
 
             promise.fail(function() {
@@ -41,28 +39,28 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
             });
         };
 
-        function pollQueue() {
-            setTimeout(function() {
-                var promise = service.getQueueStatus(self.name(), self.authTicket);
-                promise.done(function (data) {
-                    if (data["matched"]) {
-                        var gameSvc = service.createGameService(data["link"]);
-                        manager.setComponent(
-                            "gameView",
-                            {
-                                service: gameSvc,
-                                ticket: self.authTicket,
-                                name: self.name()
-                            });
-                    }
-                    else {
-                        pollQueue();
-                    }
+        function onEnterQueue(ticket) {
+            self.state("queuing");
+            self.authTicket = ticket;
+
+            service.waitForGame(self.name(), self.authTicket)
+                .done(function(data) {
+                    onFoundGame(data["link"]);
+                })
+                .fail(function() {
+                    self.state("ready");
                 });
-                promise.fail(function() {
-                    alert("Failed to poll queue!");
+        }
+
+        function onFoundGame(link) {
+            var gameSvc = service.createGameService(link);
+            manager.setComponent(
+                "gameView",
+                {
+                    service: gameSvc,
+                    ticket: self.authTicket,
+                    name: self.name()
                 });
-            }, 5000);
         }
     }
 
