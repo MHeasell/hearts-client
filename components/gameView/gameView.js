@@ -33,6 +33,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
         var service = params.service;
 
         var pileNumber = null;
+        var nextCardNumber = null;
 
         function startPile() {
             if (pileNumber === null) {
@@ -41,6 +42,8 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
             else {
                 pileNumber += 1;
             }
+
+            nextCardNumber = 1;
 
             // if we have the 2 of clubs, we must go first
             if (self.hand.indexOf("c2") !== -1) {
@@ -56,10 +59,54 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
             // TODO: figure out who won, add to score
         }
 
+        function getPlayerPositionDescription(playerName) {
+            var positions = ["yours", "left", "across", "right"];
+
+            var ourIndex = self.playerNumber;
+            var otherIndex = self.players.indexOf(playerName);
+            var diff = otherIndex - ourIndex;
+            if (diff < 0) {
+                diff += 4;
+            }
+
+            return positions[diff];
+        }
+
+        function pollNextPileCard() {
+            setTimeout(function() {
+                service.getPileCard(pileNumber, nextCardNumber)
+                    .done(function(data) {
+                        var pos = getPlayerPositionDescription(data["player"]);
+                        self.pile.push({
+                            "position": pos,
+                            "card": data["card"]
+                        });
+                        nextCardNumber += 1;
+
+                        if (self.pile().length === 4) {
+                            endPile();
+                        }
+                        else if (pos === "right") {
+                            self.gameState("our-turn");
+                        }
+                        else {
+                            waitForOtherPlayerMoves();
+                        }
+                    })
+                    .fail(function(xhr) {
+                        if (xhr.status === 404) {
+                            pollNextPileCard();
+                        }
+                        else {
+                            alert("Failed to poll for pile card!");
+                        }
+                    });
+            }, 5000);
+        }
+
         function waitForOtherPlayerMoves() {
             self.gameState("waiting-for-moves");
-            alert("wait for other player moves");
-            // TODO: actually poll for other player moves
+            pollNextPileCard();
         }
 
         this.confirmReceiveCards = function() {
@@ -89,6 +136,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                     .done(function() {
                         self.pile.push({ card: val, position: "yours" });
                         self.hand.remove(val);
+                        nextCardNumber += 1;
                         if (self.pile().length === 4) {
                             endPile();
                         }

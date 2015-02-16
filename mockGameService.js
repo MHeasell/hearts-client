@@ -6,7 +6,7 @@ define(['jquery'], function($) {
             var defer = $.Deferred();
 
             defer.resolve({ "cards": [
-                "c2",
+                "c4",
                 "d5",
                 "d3",
                 "sq",
@@ -27,7 +27,7 @@ define(['jquery'], function($) {
         this.getPlayers = function() {
             var defer = $.Deferred();
 
-            defer.resolve({ "players": ["Joe", "Bob", "Mitch", "Alan"] });
+            defer.resolve({ "players": ["Joe", "Bob", "Steve", "Alan"] });
 
             return defer.promise();
         };
@@ -58,6 +58,25 @@ define(['jquery'], function($) {
             var defer = $.Deferred();
 
             defer.resolve({ "success": true });
+
+            return defer.promise();
+        };
+
+        this.getPileCard = function(pileNumber, cardNumber) {
+            var defer = $.Deferred();
+
+            if (cardNumber === 1) {
+                defer.resolve({ "player": "Bob", "card": "c2" });
+            }
+            else if (cardNumber === 2) {
+                defer.resolve({ "player": "Steve", "card": "c5" });
+            }
+            else if (cardNumber === 3) {
+                defer.resolve({ "player": "Alan", "card": "dk" });
+            }
+            else if (cardNumber === 4) {
+                defer.resolve({ "player": "Joe", "card": "c7" });
+            }
 
             return defer.promise();
         };

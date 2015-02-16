@@ -39,6 +39,10 @@ define(['jquery'], function($) {
                 data);
             return promise;
         };
+
+        this.getPileCard = function(pileNumber, cardNumber) {
+            return $.get(gameAddress + "/piles/" + pileNumber + "/" + cardNumber);
+        };
     }
 
     return GameService;
