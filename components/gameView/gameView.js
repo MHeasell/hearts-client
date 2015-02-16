@@ -184,14 +184,14 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
             service.waitForPassedCards(self.name, authTicket)
                 .done(function(data) {
-                    receivePassedCards([data["card1"], data["card2"], data["card3"]]);
+                    onReceivePassedCards([data["card1"], data["card2"], data["card3"]]);
                 })
                 .fail(function() {
                     alert("Failed to receive passed cards!");
                 });
         }
 
-        function receivePassedCards(cards) {
+        function onReceivePassedCards(cards) {
             self.hand.push.apply(self.hand, cards);
             self.selectedCards(cards);
             self.gameState("confirm-receive-pass");
