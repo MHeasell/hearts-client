@@ -115,6 +115,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
             self.pile.push({
                 "position": pos,
+                "player": playerName,
                 "card": card
             });
 
@@ -156,7 +157,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
                 service.addCardToPile(roundNumber, pileNumber, self.name, val, authTicket)
                     .done(function() {
-                        self.pile.push({ card: val, position: "yours" });
+                        self.pile.push({ card: val, player: self.name, position: "yours" });
                         self.hand.remove(val);
                         nextCardNumber += 1;
                         if (self.pile().length === 4) {
