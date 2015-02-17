@@ -310,6 +310,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
         function beginRound() {
             roundNumber += 1;
+            lastPileWinner = null;
 
             // TODO: poll for hand.
             // We might query for it before the first round has started,
