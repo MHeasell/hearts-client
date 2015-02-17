@@ -263,6 +263,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
                 service.addCardToPile(roundNumber, pileNumber, self.name, val, authTicket)
                     .done(function() {
+                        self.hand.remove(val);
                         onReceiveNextPileCard(self.name, val);
                     })
                     .fail(function() {
