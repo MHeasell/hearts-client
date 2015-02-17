@@ -45,10 +45,7 @@ define(['jquery'], function($) {
             var defer = $.Deferred();
 
             defer.resolve({
-                "passed": true,
-                "card1": "h1",
-                "card2": "cj",
-                "card3": "d1"
+                "cards": ["h1", "cj", "d1"]
             });
 
             return defer.promise();

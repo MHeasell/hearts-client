@@ -70,15 +70,15 @@ define(['jquery'], function($) {
             (function pollPassedCards() {
                 self.getPassedCards(roundNumber, name, ticket)
                     .done(function(data) {
-                        if (data["passed"]) {
-                            defer.resolve(data);
-                        }
-                        else {
+                        defer.resolve(data);
+                    })
+                    .fail(function(xhr) {
+                        if (xhr.status === 404) {
                             setTimeout(pollPassedCards, POLL_INTERVAL);
                         }
-                    })
-                    .fail(function() {
-                        defer.reject();
+                        else {
+                            defer.reject();
+                        }
                     });
             })();
 

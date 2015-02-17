@@ -193,7 +193,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
             service.waitForPassedCards(roundNumber, self.name, authTicket)
                 .done(function(data) {
-                    onReceivePassedCards([data["card1"], data["card2"], data["card3"]]);
+                    onReceivePassedCards(data["cards"]);
                 })
                 .fail(function() {
                     alert("Failed to receive passed cards!");
