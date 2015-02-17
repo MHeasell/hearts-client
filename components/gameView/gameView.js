@@ -2,6 +2,62 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
     var PILE_END_DELAY = 1000;
 
+    /**
+     * Finds the winner of this pile of cards.
+     *
+     * @param cards {Array} An array of string "card" values.
+     * There must be at least one card in the array.
+     * @returns {Number} The index of the winning card.
+     */
+    function findWinningIndex(cards) {
+        var parsedCards = cards.map(parseCard);
+
+        var suit = parsedCards[0].suit;
+
+        var winner = { index: -1, numericRank: 0 };
+        for (var i = 0; i < parsedCards.length; i++) {
+            var c = parsedCards[i];
+
+            if (c.suit !== suit) {
+                continue;
+            }
+
+            var numRank = convertToNumericRank(c.rank);
+            if (numRank > winner.numericRank) {
+                winner = { index: i, numericRank: numRank };
+            }
+        }
+
+        return winner.index;
+    }
+
+    /**
+     * Converts the given string rank into a sortable numeric value.
+     * @param rank {String} The rank string
+     * @returns {Number} The numeric representation of the rank.
+     */
+    function convertToNumericRank(rank) {
+        switch (rank) {
+            case "j":
+                return 11;
+            case "q":
+                return 12;
+            case "k":
+                return 13;
+            case "1":
+                return 14;
+            default:
+                return parseInt(rank);
+        }
+    }
+
+    function parseCard(val) {
+        var suit = val.charAt(0);
+        var rank = val.slice(1);
+
+        return { suit: suit, rank: rank };
+    }
+
     function GameViewModel(params) {
         var self = this;
 
@@ -38,6 +94,8 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
         var nextCardNumber = null;
         var roundNumber = 0;
 
+        var lastPileWinner = null;
+
         function startPile() {
             if (pileNumber === null) {
                 pileNumber = 1;
@@ -48,8 +106,10 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
             nextCardNumber = 1;
 
-            // if we have the 2 of clubs, we must go first
-            if (self.hand.indexOf("c2") !== -1) {
+            // if we have the 2 of clubs or we won the last pile,
+            // we must go first
+            if (self.hand.indexOf("c2") !== -1 ||
+                lastPileWinner === self.name) {
                 beginTurn();
             }
             else {
@@ -66,10 +126,13 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
         }
 
         function endPile() {
+            // figure out who won the pile
+            var pileCards = self.pile().map(function(x) { return x.card; });
+            var winIndex = findWinningIndex(pileCards);
+            lastPileWinner = self.pile()[winIndex].player;
 
-            // TODO: figure out who won and who starts next round
-
-            // wait a bit so the player can see the result
+            // wait a bit so the player can see the result,
+            // then clean up the table.
             setTimeout(function() {
                 self.pile.removeAll();
                 if (pileNumber === 13) {
