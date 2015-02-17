@@ -26,6 +26,21 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
         return false;
     }
 
+    function sumPoints(cards) {
+        var points = 0;
+        for (var i = 0; i < cards.length; i++) {
+            var c = cards[i];
+            if (parseCard(c).suit === "h") {
+                points += 1;
+            }
+            else if (c === "qs") {
+                points += 13;
+            }
+        }
+
+        return points;
+    }
+
     /**
      * Finds the winner of this pile of cards.
      *
@@ -120,6 +135,9 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
         var lastPileWinner = null;
         var heartsBroken = false;
+        var pointsScoredThisRound = {};
+
+        var pointsScoredOverall = {};
 
         function startPile() {
             if (pileNumber === null) {
@@ -143,11 +161,45 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
         }
 
         function endRound() {
-            alert("end round");
 
-            // TODO: calculate scores,
-            // determine whether to continue playing
-            // or if the game is over.
+            // check whether any of the players shot the moon
+            var shotMoon = false;
+            for (var j = 0; i < self.players().length; i++) {
+                var p = self.players()[j];
+                if (pointsScoredThisRound[p] === 26) {
+                    for (var k = 0; i < self.players().length; k++) {
+                        var q = self.players()[k];
+                        if (q === p) {
+                            continue;
+                        }
+
+                        pointsScoredOverall[q] += 26;
+                    }
+
+                    shotMoon = true;
+                    break;
+                }
+            }
+
+            // otherwise do scoring as normal
+            if (!shotMoon) {
+                for (var i = 0; i < self.players().length; i++) {
+                    var r = self.players()[i];
+                    pointsScoredOverall[r] += pointsScoredThisRound[r];
+                }
+            }
+
+            // the game is over if someone goes over 100
+            for (var l = 0; l < self.players().length; l++) {
+                var s = self.players()[l];
+                if (pointsScoredOverall[s] >= 100) {
+                    alert("Game over!");
+                    return;
+                }
+            }
+
+            // otherwise, begin a the next round
+            beginRound();
         }
 
         function endPile() {
@@ -155,6 +207,9 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
             var pileCards = self.pile().map(function(x) { return x.card; });
             var winIndex = findWinningIndex(pileCards);
             lastPileWinner = self.pile()[winIndex].player;
+
+            // add points to the winning player's total
+            pointsScoredThisRound[lastPileWinner] += sumPoints(pileCards);
 
             // wait a bit so the player can see the result,
             // then clean up the table.
@@ -325,6 +380,10 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
             lastPileWinner = null;
             heartsBroken = false;
 
+            for (var i = 0; i < self.players().length; i++) {
+                pointsScoredThisRound[self.players()[i]] = 0;
+            }
+
             // TODO: poll for hand.
             // We might query for it before the first round has started,
             // in which case we'll get a 404, so we need to wait for it.
@@ -345,6 +404,10 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                     var players = data["players"];
                     self.players(players);
                     self.playerNumber = players.indexOf(self.name);
+
+                    for (var i = 0; i < self.players().length; i++) {
+                        pointsScoredOverall[self.players()[i]] = 0;
+                    }
 
                     beginRound();
                 });
