@@ -248,11 +248,6 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
                 var cardSuit = parseCard(val).suit;
 
-                if (self.pile().length === 0 && !heartsBroken && cardSuit === "h") {
-                    alert("Hearts has not been broken yet.");
-                    return;
-                }
-
                 if (self.pile().length > 0) {
                     var pileSuit = parseCard(self.pile()[0].card).suit;
                     if (containsSuit(self.hand(), pileSuit) && cardSuit !== pileSuit) {
@@ -263,6 +258,11 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
                 if (pileNumber === 1 && (cardSuit === "h" || val === "sq")) {
                     alert("You can't play a point card on the first trick.");
+                    return;
+                }
+
+                if (self.pile().length === 0 && !heartsBroken && cardSuit === "h") {
+                    alert("Hearts has not been broken yet.");
                     return;
                 }
 
