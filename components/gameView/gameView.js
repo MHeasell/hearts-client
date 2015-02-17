@@ -266,6 +266,10 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                     return;
                 }
 
+                // TODO: edge cases, e.g.
+                // * hearts not broken, but no other suit available.
+                // * first trick, hand is entirely point cards.
+
                 service.addCardToPile(roundNumber, pileNumber, self.name, val, authTicket)
                     .done(function() {
                         self.hand.remove(val);
