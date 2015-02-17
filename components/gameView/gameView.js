@@ -2,6 +2,30 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
     var PILE_END_DELAY = 1000;
 
+    function getSingularSuitName(suit) {
+        switch (suit) {
+            case "c":
+                return "club";
+            case "s":
+                return "spade";
+            case "d":
+                return "diamond";
+            case "h":
+                return "heart";
+        }
+    }
+
+    function containsSuit(cards, suit) {
+        for (var i = 0; i < cards.length; i++) {
+            var c = cards[i];
+            if (parseCard(c).suit === suit) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Finds the winner of this pile of cards.
      *
@@ -216,6 +240,15 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                     val !== "c2") {
                     alert("You must start with the 2 of clubs.");
                     return;
+                }
+
+                if (self.pile().length > 0) {
+                    var pileSuit = parseCard(self.pile()[0].card).suit;
+                    var cardSuit = parseCard(val).suit;
+                    if (containsSuit(self.hand(), pileSuit) && cardSuit !== pileSuit) {
+                        alert("You must play a " + getSingularSuitName(pileSuit));
+                        return;
+                    }
                 }
 
                 service.addCardToPile(roundNumber, pileNumber, self.name, val, authTicket)
