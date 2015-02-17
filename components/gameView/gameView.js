@@ -119,6 +119,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
         var roundNumber = 0;
 
         var lastPileWinner = null;
+        var heartsBroken = false;
 
         function startPile() {
             if (pileNumber === null) {
@@ -208,6 +209,11 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
             nextCardNumber += 1;
 
+            var suit = parseCard(card).suit;
+            if (suit === "h") {
+                heartsBroken = true;
+            }
+
             if (self.pile().length === 4) {
                 endPile();
             }
@@ -240,9 +246,15 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                     return;
                 }
 
+                var cardSuit = parseCard(val).suit;
+
+                if (self.pile().length === 0 && !heartsBroken && cardSuit === "h") {
+                    alert("Hearts has not been broken yet.");
+                    return;
+                }
+
                 if (self.pile().length > 0) {
                     var pileSuit = parseCard(self.pile()[0].card).suit;
-                    var cardSuit = parseCard(val).suit;
                     if (containsSuit(self.hand(), pileSuit) && cardSuit !== pileSuit) {
                         alert("You must play a " + getSingularSuitName(pileSuit));
                         return;
@@ -301,6 +313,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
         function beginRound() {
             roundNumber += 1;
             lastPileWinner = null;
+            heartsBroken = false;
 
             // TODO: poll for hand.
             // We might query for it before the first round has started,
