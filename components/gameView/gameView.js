@@ -251,15 +251,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
 
                 service.addCardToPile(roundNumber, pileNumber, self.name, val, authTicket)
                     .done(function() {
-                        self.pile.push({ card: val, player: self.name, position: "yours" });
-                        self.hand.remove(val);
-                        nextCardNumber += 1;
-                        if (self.pile().length === 4) {
-                            endPile();
-                        }
-                        else {
-                            waitForOtherPlayerMoves();
-                        }
+                        onReceiveNextPileCard(self.name, val);
                     })
                     .fail(function() {
                         alert("Failed to play card!");
