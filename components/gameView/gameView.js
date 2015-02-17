@@ -261,6 +261,11 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                     }
                 }
 
+                if (pileNumber === 1 && (cardSuit === "h" || val === "sq")) {
+                    alert("You can't play a point card on the first trick.");
+                    return;
+                }
+
                 service.addCardToPile(roundNumber, pileNumber, self.name, val, authTicket)
                     .done(function() {
                         self.hand.remove(val);
