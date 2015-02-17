@@ -235,9 +235,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                 }
             }
             else if (self.gameState() === "our-turn") {
-                if (self.pile().length === 0 &&
-                    self.hand.indexOf("c2") !== -1 &&
-                    val !== "c2") {
+                if (self.hand.indexOf("c2") !== -1 && val !== "c2") {
                     alert("You must start with the 2 of clubs.");
                     return;
                 }
