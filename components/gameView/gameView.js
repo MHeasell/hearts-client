@@ -384,10 +384,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                 pointsScoredThisRound[self.players()[i]] = 0;
             }
 
-            // TODO: poll for hand.
-            // We might query for it before the first round has started,
-            // in which case we'll get a 404, so we need to wait for it.
-            service.getHand(roundNumber, self.name, authTicket)
+            service.waitForHand(roundNumber, self.name, authTicket)
                 .done(function(data) {
                     onReceiveHand(data["cards"]);
                 })

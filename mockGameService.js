@@ -24,6 +24,10 @@ define(['jquery'], function($) {
             return defer.promise();
         };
 
+        this.waitForHand = function(roundNumber, name, ticket) {
+            return this.getHand(roundNumber, name, ticket);
+        };
+
         this.getPlayers = function() {
             var defer = $.Deferred();
 

@@ -12,6 +12,27 @@ define(['jquery'], function($) {
                 data);
         };
 
+        this.waitForHand = function(roundNumber, name, ticket) {
+            var defer = $.Deferred();
+
+            (function pollHand() {
+                self.getHand(roundNumber, name, ticket)
+                    .done(function(data) {
+                        defer.resolve(data);
+                    })
+                    .fail(function(xhr) {
+                        if (xhr.status === 404) {
+                            setTimeout(pollHand, POLL_INTERVAL);
+                        }
+                        else {
+                            defer.reject();
+                        }
+                    });
+            })();
+
+            return defer.promise();
+        };
+
         this.getPlayers = function() {
             return $.get(gameAddress + "/players");
         };
