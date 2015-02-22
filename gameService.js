@@ -7,8 +7,11 @@ define(['jquery'], function($) {
 
         this.getHand = function(roundNumber, name, ticket) {
             var data = { "ticket": ticket };
+
+            var encodedName = encodeURIComponent(name);
+
             return $.get(
-                gameAddress + "/rounds/" + roundNumber + "/players/" + name + "/hand",
+                gameAddress + "/rounds/" + roundNumber + "/players/" + encodedName + "/hand",
                 data);
         };
 
@@ -44,24 +47,40 @@ define(['jquery'], function($) {
                 card3: cards[2]
             };
 
+            var encodedRoundNumber = encodeURIComponent(roundNumber);
+            var encodedTargetName = encodeURIComponent(targetName);
+            var encodedTicket = encodeURIComponent(ticket);
+
             return $.post(
-                gameAddress + "/rounds/" + roundNumber + "/players/" + targetName + "/passed_cards?ticket=" + ticket,
+                gameAddress + "/rounds/" + encodedRoundNumber + "/players/" + encodedTargetName + "/passed_cards?ticket=" + encodedTicket,
                 data);
         };
 
         this.getPassedCards = function(roundNumber, name, ticket) {
-            return $.get(gameAddress + "/rounds/" + roundNumber + "/players/" + name + "/passed_cards?ticket=" + ticket);
+            var encodedRoundNumber = encodeURIComponent(roundNumber);
+            var encodedName = encodeURIComponent(name);
+            var encodedTicket = encodeURIComponent(ticket);
+
+            return $.get(gameAddress + "/rounds/" + encodedRoundNumber + "/players/" + encodedName + "/passed_cards?ticket=" + encodedTicket);
         };
 
         this.addCardToPile = function(roundNumber, pileNumber, name, card, ticket) {
+            var encodedRoundNumber = encodeURIComponent(roundNumber);
+            var encodedPileNumber = encodeURIComponent(pileNumber);
+            var encodedTicket = encodeURIComponent(ticket);
+
             var data = { "player": name, "card": card };
             return $.post(
-                gameAddress + "/rounds/" + roundNumber + "/piles/" + pileNumber + "?ticket=" + ticket,
+                gameAddress + "/rounds/" + encodedRoundNumber + "/piles/" + encodedPileNumber + "?ticket=" + encodedTicket,
                 data);
         };
 
         this.getPileCard = function(roundNumber, pileNumber, cardNumber) {
-            return $.get(gameAddress + "/rounds/" + roundNumber + "/piles/" + pileNumber + "/" + cardNumber);
+            var encodedRoundNumber = encodeURIComponent(roundNumber);
+            var encodedPileNumber = encodeURIComponent(pileNumber);
+            var encodedCardNumber = encodeURIComponent(cardNumber);
+
+            return $.get(gameAddress + "/rounds/" + encodedRoundNumber + "/piles/" + encodedPileNumber + "/" + encodedCardNumber);
         };
 
         this.waitForPileCard = function(roundNumber, pileNumber, cardNumber) {

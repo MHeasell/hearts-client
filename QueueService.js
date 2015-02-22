@@ -12,7 +12,8 @@ define(['jquery', 'gameService'], function($, GameService) {
 
         this.getQueueStatus = function(name, ticket) {
             var data = { "ticket": ticket };
-            return $.get(serverAddress + "/queue/" + name, data);
+            var encodedName = encodeURIComponent(name);
+            return $.get(serverAddress + "/queue/" + encodedName, data);
         };
 
         this.createGameService = function(link) {
