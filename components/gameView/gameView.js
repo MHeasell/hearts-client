@@ -325,6 +325,8 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                 // * hearts not broken, but no other suit available.
                 // * first trick, hand is entirely point cards.
 
+                self.gameState("playing-move");
+
                 service.addCardToPile(roundNumber, pileNumber, self.name, val, authTicket)
                     .done(function() {
                         self.hand.remove(val);
@@ -332,6 +334,7 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
                     })
                     .fail(function() {
                         alert("Failed to play card!");
+                        self.gameState("our-turn");
                     });
             }
         };
@@ -341,12 +344,14 @@ define(['jquery', 'knockout', 'text!./gameView.html'], function($, ko, tmpl) {
             var passPlayerName = this.players()[passPlayerNumber];
             var selectedCards = this.selectedCards();
 
+            this.gameState("performing-pass");
             service.passCards(roundNumber, passPlayerName, selectedCards, authTicket)
                 .done(function() {
                     onPassedCards();
                 })
                 .fail(function() {
                     alert("Failed to pass cards!");
+                    self.gameState("passing");
                 });
         };
 
