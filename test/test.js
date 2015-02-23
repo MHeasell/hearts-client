@@ -4,10 +4,18 @@ require.config({
         jquery: "bower_components/jquery/dist/jquery.min",
         knockout: "bower_components/knockout/dist/knockout",
         bootstrap: "bower_components/bootstrap/dist/js/bootstrap.min",
-        text: "bower_components/requirejs-text/text"
+        text: "bower_components/requirejs-text/text",
+
+        jasmine: "bower_components/jasmine/lib/jasmine-core/jasmine",
+        'jasmine-html': "bower_components/jasmine/lib/jasmine-core/jasmine-html",
+        'jasmine-boot': "bower_components/jasmine/lib/jasmine-core/boot"
     },
     shim: {
-        bootstrap: { deps: ["jquery"] }
+        bootstrap: { deps: ["jquery"] },
+
+        jasmine: { exports: 'window.jasmineRequire' },
+        'jasmine-html': { deps: ['jasmine'], exports: 'window.jasmineRequire' },
+        'jasmine-boot': { deps: ['jasmine', 'jasmine-html'], exports: 'window.jasmineRequire' }
     }
 });
 
@@ -17,8 +25,10 @@ require.config({
         'components/gameView'
     ];
 
-    var modulesCorrectedPaths = testModules.map(
-        function(m) { return 'test/' + m; });
+    require(['jasmine-boot'], function() {
+        var modulesCorrectedPaths = testModules.map(
+            function(m) { return 'test/' + m; });
 
-    require(modulesCorrectedPaths, window.onload);
+        require(modulesCorrectedPaths, window.onload);
+    });
 })();
