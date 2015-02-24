@@ -31,7 +31,7 @@ define([], function() {
             if (parseCard(c).suit === "h") {
                 points += 1;
             }
-            else if (c === "qs") {
+            else if (c === "sq") {
                 points += 13;
             }
         }
