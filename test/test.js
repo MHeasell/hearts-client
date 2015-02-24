@@ -21,6 +21,7 @@ require.config({
 
 (function() {
     var testModules = [
+        'heartsUtil',
         'components/queueView',
         'components/gameView'
     ];
