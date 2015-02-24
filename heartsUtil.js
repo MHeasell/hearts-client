@@ -10,6 +10,8 @@ define([], function() {
                 return "diamond";
             case "h":
                 return "heart";
+            default:
+                throw new Error("Invalid suit: " + suit);
         }
     }
 
