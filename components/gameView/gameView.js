@@ -19,6 +19,13 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         this.playerNumber = null;
 
+        this.leftPlayer = ko.observable("Left");
+        this.rightPlayer = ko.observable("Right");
+        this.acrossPlayer = ko.observable("Across");
+        this.leftPlayerCardCount = ko.observable(0);
+        this.acrossPlayerCardCount = ko.observable(0);
+        this.rightPlayerCardCount = ko.observable(0);
+
         this.passAvailable = ko.computed(function() {
             return this.gameState() === "passing";
         }, this);
@@ -168,6 +175,18 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 "card": card
             });
 
+            switch (pos) {
+                case "left":
+                    self.leftPlayerCardCount(self.leftPlayerCardCount() - 1);
+                    break;
+                case "right":
+                    self.rightPlayerCardCount(self.rightPlayerCardCount() - 1);
+                    break;
+                case "across":
+                    self.acrossPlayerCardCount(self.acrossPlayerCardCount() - 1);
+                    break;
+            }
+
             nextCardNumber += 1;
 
             var suit = util.parseCard(card).suit;
@@ -284,6 +303,9 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         function onReceiveHand(cards) {
             self.hand(cards);
+            self.leftPlayerCardCount(13);
+            self.rightPlayerCardCount(13);
+            self.acrossPlayerCardCount(13);
             self.gameState("passing");
         }
 
@@ -313,6 +335,10 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                     var players = data["players"];
                     self.players(players);
                     self.playerNumber = players.indexOf(self.name);
+
+                    self.leftPlayer(players[(self.playerNumber + 1) % 4]);
+                    self.rightPlayer(players[(self.playerNumber + 3) % 4]);
+                    self.acrossPlayer(players[(self.playerNumber + 2) % 4]);
 
                     for (var i = 0; i < self.players().length; i++) {
                         pointsScoredOverall[self.players()[i]] = 0;

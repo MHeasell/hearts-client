@@ -1,21 +1,40 @@
 <h1>Hearts Game</h1>
 
-<p>Players:</p>
-<ul data-bind="foreach: players">
-    <li data-bind="text: $data"></li>
-</ul>
+<div class="table">
+    <div class="acrossSide">
+        <span data-bind="text: acrossPlayer"></span>
+        <ul class="hand" data-bind="foreach: new Array(acrossPlayerCardCount())">
+            <li class="card card-back"></li>
+        </ul>
+    </div>
 
-<h2>Cards Played</h2>
+    <div class="midStrip">
+        <div class="leftSide">
+            <span data-bind="text: leftPlayer"></span>
+            <ul class="hand-vertical" data-bind="foreach: new Array(leftPlayerCardCount())">
+                <li class="card-h card-back-h"></li>
+            </ul>
+        </div>
 
-<div class="playArea" data-bind="foreach: pile">
-    <div class="card" data-bind="css: 'card-' + position + ' card-' + card"></div>
+        <div class="rightSide">
+            <span data-bind="text: rightPlayer"></span>
+            <ul class="hand-vertical" data-bind="foreach: new Array(rightPlayerCardCount())">
+                <li class="card-h card-back-h"></li>
+            </ul>
+        </div>
+        <div class="playArea" data-bind="foreach: pile">
+            <div class="card" data-bind="css: 'card-' + position + ' card-' + card"></div>
+        </div>
+    </div>
+
+    <div class="yourSide">
+        <span data-bind="text: name"></span>
+        <ul class="hand selectable" data-bind="foreach: hand">
+            <li data-bind="attr: { class: 'card card-' + $data }, css: { selected: $parent.selectedCards.indexOf($data) !== -1 }, click: $parent.clickCard"></li>
+        </ul>
+        <div class="actionPanel">
+            <button class="btn btn-primary" data-bind="click: passCards, enable: passEnabled, visible: passAvailable">Pass</button>
+            <button class="btn btn-primary" data-bind="click: confirmReceiveCards, visible: confirmReceiveAvailable">Accept Cards</button>
+        </div>
+    </div>
 </div>
-
-<h2>Your Hand</h2>
-<ul class="hand" data-bind="foreach: hand">
-    <li data-bind="attr: { class: 'card card-' + $data }, css: { selected: $parent.selectedCards.indexOf($data) !== -1 }, click: $parent.clickCard"></li>
-</ul>
-
-<button class="btn btn-primary" data-bind="click: passCards, enable: passEnabled, visible: passAvailable">Pass</button>
-
-<button class="btn btn-primary" data-bind="click: confirmReceiveCards, visible: confirmReceiveAvailable">Accept Cards</button>

@@ -1,20 +1,39 @@
+.hand-vertical {
+    list-style-type: none;
+    overflow: auto;
+    padding: 0;
+    margin: 0;
+}
+
+.hand-vertical li {
+    margin-top: -55px;
+}
+
+.hand-vertical li:first-child {
+    margin-top: 0;
+}
+
 .hand {
     list-style-type: none;
     overflow: auto;
+    padding: 0;
+    margin: 0;
 }
 
 .hand li {
+    display: inline-block;
+    margin-left: -59px;
+}
+
+.hand.selectable {
+    padding-top: 10px;
+}
+
+.hand.selectable li {
     position: relative;
-    float: left;
-    margin-left: -55px;
-    margin-top: 10px;
 }
 
-.hand li:hover {
-
-}
-
-.hand li:hover::before {
+.hand.selectable li:hover::before {
     content: '';
     display: block;
     width: 71px;
@@ -30,14 +49,19 @@
     margin-left: 0;
 }
 
-.hand li.selected {
-    margin-top: 0px;
+.hand.selectable li.selected {
+    top: -10px;
 }
 
 .playArea {
-    position: relative;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
     width: 130px;
     height: 160px;
+    margin: auto;
 }
 
 #queueLoadingLabel {
@@ -46,4 +70,50 @@
 
 #gameView {
     display: none;
+}
+
+
+.leftSide {
+    text-align: center;
+    float: left;
+}
+
+.leftSide .hand {
+    transform-origin: 0 96px;
+    transform: rotate(90deg);
+
+}
+
+.rightSide {
+    text-align: center;
+    float: right;
+}
+
+.acrossSide {
+    text-align: center;
+}
+
+.acrossSide .hand {
+    text-align: center;
+}
+
+.table {
+    overflow: auto;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.yourSide {
+    clear: both;
+    text-align: center;
+}
+
+.actionPanel {
+    margin-top: 10px;
+}
+
+.midStrip {
+    height: 300px;
+    position: relative;
 }
