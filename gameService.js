@@ -1,6 +1,6 @@
 define(['jquery'], function($) {
 
-    var POLL_INTERVAL = 5000;
+    var POLL_INTERVAL = 500;
 
     function GameService(gameAddress) {
         var self = this;
