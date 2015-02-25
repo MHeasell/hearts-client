@@ -78,15 +78,13 @@
     float: left;
 }
 
-.leftSide .hand {
-    transform-origin: 0 96px;
-    transform: rotate(90deg);
-
-}
-
 .rightSide {
     text-align: center;
     float: right;
+}
+
+.rightSide .hand-vertical {
+    transform: rotate(180deg);
 }
 
 .acrossSide {
@@ -95,6 +93,7 @@
 
 .acrossSide .hand {
     text-align: center;
+    transform: rotate(180deg);
 }
 
 .table {
