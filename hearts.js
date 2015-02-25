@@ -10,12 +10,12 @@ require.config({
     }
 });
 
-require(['jquery', 'knockout', 'mockQueueService', 'bootstrap'], function($, ko, QueueService) {
+require(['jquery', 'knockout', 'queueService', 'bootstrap'], function($, ko, QueueService) {
 
     $(function() {
         "use strict";
 
-        var serverAddress = "http://192.168.254.134:5000";
+        var serverAddress = "http://192.168.1.12:5000";
 
         function MainModel() {
 
