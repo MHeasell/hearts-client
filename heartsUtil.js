@@ -97,12 +97,35 @@ define([], function() {
         return { suit: suit, rank: rank };
     }
 
+    function getPassDirection(roundNumber) {
+        var dirs = ["left", "right", "across", "none"];
+        var idx = (roundNumber - 1) % 4;
+        return dirs[idx];
+    }
+
+    function getPassOffset(direction) {
+        switch (direction) {
+            case "left":
+                return 1;
+            case "right":
+                return 3;
+            case "across":
+                return 2;
+            case "none":
+                return 0;
+            default:
+                throw new Error("Invalid pass direction: " + direction);
+        }
+    }
+
     return {
         findWinningIndex: findWinningIndex,
         sumPoints: sumPoints,
         parseCard: parseCard,
         getSingularSuitName: getSingularSuitName,
-        containsSuit: containsSuit
+        containsSuit: containsSuit,
+        getPassDirection: getPassDirection,
+        getPassOffset: getPassOffset
     };
 });
 

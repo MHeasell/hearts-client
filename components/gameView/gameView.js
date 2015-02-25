@@ -246,7 +246,8 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         };
 
         this.passCards = function() {
-            var passPlayerNumber = (this.playerNumber + 1) % 4;
+            var passPlayerOffset = util.getPassOffset(util.getPassDirection(roundNumber));
+            var passPlayerNumber = (this.playerNumber + passPlayerOffset) % 4;
             var passPlayerName = this.players()[passPlayerNumber];
             var selectedCards = this.selectedCards();
 

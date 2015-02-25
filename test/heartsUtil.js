@@ -104,5 +104,26 @@ define(['heartsUtil'], function(util) {
                 expect(util.parseCard('cj')).toEqual({ suit: 'c', rank: 'j' });
             });
         });
+
+        describe('getPassDirection function', function() {
+            it('returns "left" for round 1', function() {
+                expect(util.getPassDirection(1)).toBe("left");
+            });
+            it('returns "right" for round 2', function() {
+                expect(util.getPassDirection(2)).toBe("right");
+            });
+            it('returns "across" for round 3', function() {
+                expect(util.getPassDirection(3)).toBe("across");
+            });
+            it('returns "none" for round 4', function() {
+                expect(util.getPassDirection(4)).toBe("none");
+            });
+            it('works for rounds greater than 4', function() {
+                expect(util.getPassDirection(5)).toBe("left");
+                expect(util.getPassDirection(6)).toBe("right");
+                expect(util.getPassDirection(7)).toBe("across");
+                expect(util.getPassDirection(8)).toBe("none");
+            });
+        });
     });
 });
