@@ -15,13 +15,13 @@ require(['jquery', 'knockout', 'queueService', 'bootstrap'], function($, ko, Que
             };
         }
 
+        ko.components.register('queueView', { require: 'components/queueView/queueView' });
+        ko.components.register('gameView', { require: 'components/gameView/gameView' });
+
         var mainModel = new MainModel();
 
         var svc = new QueueService(serverAddress);
         mainModel.setComponent('queueView', { manager: mainModel, service: svc });
-
-        ko.components.register('queueView', { require: 'components/queueView/queueView' });
-        ko.components.register('gameView', { require: 'components/gameView/gameView' });
 
         ko.applyBindings(mainModel);
     });
