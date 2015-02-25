@@ -7,13 +7,7 @@ require(['jquery', 'knockout', 'queueService', 'bootstrap'], function($, ko, Que
 
         function MainModel() {
 
-            this.componentInfo = ko.observable({
-                name:'queueView',
-                params: {
-                    manager: this,
-                    service: new QueueService(serverAddress)
-                }
-            });
+            this.componentInfo = ko.observable();
 
             this.setComponent = function(name, params) {
                 params.manager = this;
@@ -22,6 +16,9 @@ require(['jquery', 'knockout', 'queueService', 'bootstrap'], function($, ko, Que
         }
 
         var mainModel = new MainModel();
+
+        var svc = new QueueService(serverAddress);
+        mainModel.setComponent('queueView', { manager: mainModel, service: svc });
 
         ko.components.register('queueView', { require: 'components/queueView/queueView' });
         ko.components.register('gameView', { require: 'components/gameView/gameView' });
