@@ -1,19 +1,10 @@
-require(['jquery', 'knockout', 'queueService', 'bootstrap'], function($, ko, QueueService) {
+require(['jquery', 'knockout', 'queueService', 'mainModel', 'bootstrap'],
+    function($, ko, QueueService, MainModel) {
 
     $(function() {
         "use strict";
 
         var serverAddress = "http://192.168.1.12:5000";
-
-        function MainModel() {
-
-            this.componentInfo = ko.observable();
-
-            this.setComponent = function(name, params) {
-                params.manager = this;
-                mainModel.componentInfo({name: name, params: params});
-            };
-        }
 
         ko.components.register('queueView', { require: 'components/queueView/queueView' });
         ko.components.register('gameView', { require: 'components/gameView/gameView' });
