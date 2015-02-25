@@ -87,16 +87,7 @@ define(['jquery'], function($) {
         };
 
         this.waitForPassedCards = function(roundNumber, name, ticket) {
-            var defer = $.Deferred();
-
-            defer.resolve({
-                "passed": true,
-                "card1": "h1",
-                "card2": "cj",
-                "card3": "d1"
-            });
-
-            return defer.promise();
+            return this.getPassedCards(roundNumber, name, ticket);
         };
     }
 
