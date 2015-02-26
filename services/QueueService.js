@@ -1,4 +1,4 @@
-define(['jquery', 'gameService'], function($, GameService) {
+define(['jquery', 'services/GameService'], function($, GameService) {
 
     var POLL_INTERVAL = 500;
 

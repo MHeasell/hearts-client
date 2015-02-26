@@ -1,4 +1,4 @@
-define(['jquery', 'mockGameService'], function($, MockGameService) {
+define(['jquery', 'services/MockGameService'], function($, MockGameService) {
 
     function MockQueueService(serverAddress) {
 

@@ -1,4 +1,4 @@
-require(['jquery', 'knockout', 'queueService', 'mainModel', 'bootstrap'],
+require(['jquery', 'knockout', 'services/QueueService', 'mainModel', 'bootstrap'],
     function($, ko, QueueService, MainModel) {
 
     $(function() {
