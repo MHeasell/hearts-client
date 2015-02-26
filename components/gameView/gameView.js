@@ -46,6 +46,8 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                     return "Waiting for other players to play a card...";
                 case "view-trick-result":
                     return lastPileWinner + " wins this trick.";
+                case "game-over":
+                    return "The game is over!";
                 default:
                     return null;
             }
@@ -140,7 +142,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             for (var l = 0; l < self.players().length; l++) {
                 var s = self.players()[l];
                 if (pointsScoredOverall[s] >= 100) {
-                    alert("Game over!");
+                    changeState("game-over");
                     return;
                 }
             }
