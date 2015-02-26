@@ -296,12 +296,16 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         }
 
         function onReceivePassedCards(cards) {
-            self.hand.push.apply(self.hand, cards);
+            var hand = self.hand();
+            hand.push.apply(hand, cards);
+            hand.sort(util.compareCards);
+            self.hand(hand);
             self.selectedCards(cards);
             self.gameState("confirm-receive-pass");
         }
 
         function onReceiveHand(cards) {
+            cards.sort(util.compareCards);
             self.hand(cards);
             self.leftPlayerCardCount(13);
             self.rightPlayerCardCount(13);
