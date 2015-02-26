@@ -114,29 +114,33 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             }
         }
 
-        function endRound() {
-
-            // check whether any of the players shot the moon
-            var shotMoon = false;
-            for (var j = 0; j < self.players().length; j++) {
-                var p = self.players()[j];
+        function getMoonShootingPlayer() {
+            for (var i = 0; i < self.players().length; i++) {
+                var p = self.players()[i];
                 if (pointsScoredThisRound[p] === 26) {
-                    for (var k = 0; k < self.players().length; k++) {
-                        var q = self.players()[k];
-                        if (q === p) {
-                            continue;
-                        }
-
-                        pointsScoredOverall[q] += 26;
-                    }
-
-                    shotMoon = true;
-                    break;
+                    return p;
                 }
             }
 
-            // otherwise do scoring as normal
-            if (!shotMoon) {
+            return null;
+        }
+
+        function endRound() {
+            // check whether any of the players shot the moon
+            var moonShootingPlayer = getMoonShootingPlayer();
+
+            // add the scores on
+            if (moonShootingPlayer !== null) {
+                for (var k = 0; k < self.players().length; k++) {
+                    var q = self.players()[k];
+                    if (q === moonShootingPlayer) {
+                        continue; // no points for the shooting player
+                    }
+
+                    pointsScoredOverall[q] += 26;
+                }
+            }
+            else {
                 for (var i = 0; i < self.players().length; i++) {
                     var r = self.players()[i];
                     pointsScoredOverall[r] += pointsScoredThisRound[r];
