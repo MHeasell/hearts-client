@@ -90,6 +90,33 @@ define([], function() {
         }
     }
 
+    function suitValue(suit) {
+        var idx = ["c", "d", "s", "h"].indexOf(suit);
+        if (idx === -1) {
+            throw new Error("Invalid suit: " + suit);
+        }
+
+        return idx;
+    }
+
+    function compareCards(a, b) {
+        var dataA = parseCard(a);
+        var dataB = parseCard(b);
+
+        var suitValueA = suitValue(dataA.suit);
+        var suitValueB = suitValue(dataB.suit);
+
+        var suitDiff = suitValueA - suitValueB;
+        if (suitDiff !== 0) {
+            return suitDiff;
+        }
+
+        var numRankA = convertToNumericRank(dataA.rank);
+        var numRankB = convertToNumericRank(dataB.rank);
+
+        return numRankA - numRankB;
+    }
+
     function parseCard(val) {
         var suit = val.charAt(0);
         var rank = val.slice(1);
@@ -125,7 +152,8 @@ define([], function() {
         getSingularSuitName: getSingularSuitName,
         containsSuit: containsSuit,
         getPassDirection: getPassDirection,
-        getPassOffset: getPassOffset
+        getPassOffset: getPassOffset,
+        compareCards: compareCards
     };
 });
 

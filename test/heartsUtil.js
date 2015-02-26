@@ -125,5 +125,75 @@ define(['heartsUtil'], function(util) {
                 expect(util.getPassDirection(8)).toBe("none");
             });
         });
+
+        describe('compareCards function', function() {
+            describe('for cards of the same suit', function() {
+                it('returns less than 0 when a is lower rank than b', function() {
+                    expect(util.compareCards("c2", "c3")).toBeLessThan(0);
+                    expect(util.compareCards("c5", "c8")).toBeLessThan(0);
+
+                    expect(util.compareCards("s9", "s10")).toBeLessThan(0);
+                    expect(util.compareCards("d4", "d7")).toBeLessThan(0);
+                });
+
+                it('returns 0 when the cards are the same rank', function() {
+                    expect(util.compareCards("c6", "c6")).toBe(0);
+                    expect(util.compareCards("s4", "s4")).toBe(0);
+                    expect(util.compareCards("h8", "h8")).toBe(0);
+                });
+
+                it('returns greater than 0 when a is higher rank than b', function() {
+                    expect(util.compareCards("c9", "c8")).toBeGreaterThan(0);
+                    expect(util.compareCards("s10", "s9")).toBeGreaterThan(0);
+                    expect(util.compareCards("d3", "d2")).toBeGreaterThan(0);
+                    expect(util.compareCards("h6", "h3")).toBeGreaterThan(0);
+                });
+
+                it('works for face cards', function() {
+                    expect(util.compareCards("cj", "cq")).toBeLessThan(0);
+                    expect(util.compareCards("cq", "ck")).toBeLessThan(0);
+                    expect(util.compareCards("cj", "ck")).toBeLessThan(0);
+
+                    expect(util.compareCards("cj", "cj")).toBe(0);
+                    expect(util.compareCards("cq", "cq")).toBe(0);
+                    expect(util.compareCards("ck", "ck")).toBe(0);
+
+                    expect(util.compareCards("cq", "cj")).toBeGreaterThan(0);
+                    expect(util.compareCards("ck", "cq")).toBeGreaterThan(0);
+                    expect(util.compareCards("ck", "cj")).toBeGreaterThan(0);
+                });
+
+                it('considers aces to be high', function() {
+                    expect(util.compareCards("ck", "c1")).toBeLessThan(0);
+
+                    expect(util.compareCards("c1", "ck")).toBeGreaterThan(0);
+
+                    expect(util.compareCards("c1", "c2")).toBeGreaterThan(0);
+                    expect(util.compareCards("c2", "c1")).toBeLessThan(0);
+                });
+            });
+
+            describe('for cards of different suits', function() {
+                it('considers diamonds greater than clubs', function() {
+                    expect(util.compareCards("c7", "d5")).toBeLessThan(0);
+                    expect(util.compareCards("d8", "c8")).toBeGreaterThan(0);
+                });
+
+                it('considers spades to be greater than diamonds', function() {
+                    expect(util.compareCards("dq", "s2")).toBeLessThan(0);
+                    expect(util.compareCards("s5", "d5")).toBeGreaterThan(0);
+                });
+
+                it('considers hearts to be greater than spades', function() {
+                    expect(util.compareCards("s6", "h3")).toBeLessThan(0);
+                    expect(util.compareCards("h7", "s7")).toBeGreaterThan(0);
+                });
+
+                it('has transitivity', function() {
+                    expect(util.compareCards("ck", "h3")).toBeLessThan(0);
+                    expect(util.compareCards("h5", "d7")).toBeGreaterThan(0);
+                });
+            });
+        });
     });
 });
