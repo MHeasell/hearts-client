@@ -65,6 +65,11 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             return this.gameState() === "confirm-receive-pass";
         }, this);
 
+        this.handIsSelectable = ko.computed(function() {
+            var state = this.gameState();
+            return state === "our-turn" || state === "passing";
+        }, this);
+
         var authTicket = params.ticket;
         var manager = params.manager;
         var service = params.service;

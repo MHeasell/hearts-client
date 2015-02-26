@@ -18,18 +18,12 @@
     overflow: auto;
     padding: 0;
     margin: 0;
+    padding-top: 10px;
 }
 
 .hand li {
     display: inline-block;
     margin-left: -59px;
-}
-
-.hand.selectable {
-    padding-top: 10px;
-}
-
-.hand.selectable li {
     position: relative;
 }
 
@@ -49,7 +43,7 @@
     margin-left: 0;
 }
 
-.hand.selectable li.selected {
+.hand li.selected {
     top: -10px;
 }
 

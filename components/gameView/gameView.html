@@ -29,7 +29,7 @@
 
     <div class="yourSide">
         <span data-bind="text: name"></span>
-        <ul class="hand selectable" data-bind="foreach: hand">
+        <ul class="hand" data-bind="foreach: hand, css { selectable: handIsSelectable }">
             <li data-bind="attr: { class: 'card card-' + $data }, css: { selected: $parent.selectedCards.indexOf($data) !== -1 }, click: $parent.clickCard"></li>
         </ul>
         <div class="alert alert-info" role="alert" data-bind="visible: statusMessage() !== null, text: statusMessage">Blah</div>
