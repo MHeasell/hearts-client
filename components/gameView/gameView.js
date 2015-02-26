@@ -26,6 +26,16 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         this.acrossPlayerCardCount = ko.observable(0);
         this.rightPlayerCardCount = ko.observable(0);
 
+        this.leftPlayerRoundScore = ko.observable(0);
+        this.rightPlayerRoundScore = ko.observable(0);
+        this.acrossPlayerRoundScore = ko.observable(0);
+        this.ourRoundScore = ko.observable(0);
+
+        this.leftPlayerTotalScore = ko.observable(0);
+        this.rightPlayerTotalScore = ko.observable(0);
+        this.acrossPlayerTotalScore = ko.observable(0);
+        this.ourTotalScore = ko.observable(0);
+
         this.errorMessage = ko.observable(null);
 
         this.statusMessage = ko.computed(function() {
@@ -138,12 +148,14 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                     }
 
                     pointsScoredOverall[q] += 26;
+                    addTotalPointsForDisplay(q, 26);
                 }
             }
             else {
                 for (var i = 0; i < self.players().length; i++) {
                     var r = self.players()[i];
                     pointsScoredOverall[r] += pointsScoredThisRound[r];
+                    addTotalPointsForDisplay(r, pointsScoredThisRound[r]);
                 }
             }
 
@@ -160,6 +172,42 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             beginRound();
         }
 
+        function addRoundPointsForDisplay(player, points) {
+            var pos = getPlayerPositionDescription(player);
+            switch (pos) {
+                case "left":
+                    self.leftPlayerRoundScore(self.leftPlayerRoundScore() + points);
+                    break;
+                case "right":
+                    self.rightPlayerRoundScore(self.rightPlayerRoundScore() + points);
+                    break;
+                case "across":
+                    self.acrossPlayerRoundScore(self.acrossPlayerRoundScore() + points);
+                    break;
+                case "yours":
+                    self.ourRoundScore(self.ourRoundScore() + points);
+                    break;
+            }
+        }
+
+        function addTotalPointsForDisplay(player, points) {
+            var pos = getPlayerPositionDescription(player);
+            switch (pos) {
+                case "left":
+                    self.leftPlayerRoundScore(self.leftPlayerTotalScore() + points);
+                    break;
+                case "right":
+                    self.rightPlayerRoundScore(self.rightPlayerTotalScore() + points);
+                    break;
+                case "across":
+                    self.acrossPlayerRoundScore(self.acrossPlayerTotalScore() + points);
+                    break;
+                case "yours":
+                    self.ourRoundScore(self.ourTotalScore() + points);
+                    break;
+            }
+        }
+
         function endPile() {
             // figure out who won the pile
             var pileCards = self.pile().map(function(x) { return x.card; });
@@ -167,7 +215,10 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             lastPileWinner = self.pile()[winIndex].player;
 
             // add points to the winning player's total
-            pointsScoredThisRound[lastPileWinner] += util.sumPoints(pileCards);
+            var trickScore = util.sumPoints(pileCards);
+            pointsScoredThisRound[lastPileWinner] += trickScore;
+
+            addRoundPointsForDisplay(lastPileWinner, trickScore);
 
             changeState("view-trick-result");
 

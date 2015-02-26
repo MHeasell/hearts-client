@@ -3,6 +3,8 @@
 <div class="table">
     <div class="acrossSide">
         <span data-bind="text: acrossPlayer"></span>
+        <span data-bind="text: acrossPlayerRoundScore"></span>
+        (<span data-bind="text: acrossPlayerTotalScore"></span>)
         <ul class="hand" data-bind="foreach: new Array(acrossPlayerCardCount())">
             <li class="card card-back"></li>
         </ul>
@@ -11,6 +13,8 @@
     <div class="midStrip">
         <div class="leftSide">
             <span data-bind="text: leftPlayer"></span>
+            <span data-bind="text: leftPlayerRoundScore"></span>
+            (<span data-bind="text: leftPlayerTotalScore"></span>)
             <ul class="hand-vertical" data-bind="foreach: new Array(leftPlayerCardCount())">
                 <li class="card-h card-back-h"></li>
             </ul>
@@ -18,6 +22,8 @@
 
         <div class="rightSide">
             <span data-bind="text: rightPlayer"></span>
+            <span data-bind="text: rightPlayerRoundScore"></span>
+            (<span data-bind="text: rightPlayerTotalScore"></span>)
             <ul class="hand-vertical" data-bind="foreach: new Array(rightPlayerCardCount())">
                 <li class="card-h card-back-h"></li>
             </ul>
@@ -29,6 +35,8 @@
 
     <div class="yourSide">
         <span data-bind="text: name"></span>
+        <span data-bind="text: ourRoundScore"></span>
+        (<span data-bind="text: ourTotalScore"></span>)
         <ul class="hand" data-bind="foreach: hand, css { selectable: handIsSelectable }">
             <li data-bind="attr: { class: 'card card-' + $data }, css: { selected: $parent.selectedCards.indexOf($data) !== -1 }, click: $parent.clickCard"></li>
         </ul>
