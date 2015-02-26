@@ -32,6 +32,7 @@
         <ul class="hand selectable" data-bind="foreach: hand">
             <li data-bind="attr: { class: 'card card-' + $data }, css: { selected: $parent.selectedCards.indexOf($data) !== -1 }, click: $parent.clickCard"></li>
         </ul>
+        <div class="alert alert-info" role="alert" data-bind="visible: statusMessage() !== null, text: statusMessage">Blah</div>
         <div class="alert alert-danger" role="alert" data-bind="visible: errorMessage() !== null, text: errorMessage">Blah</div>
         <div class="actionPanel">
             <button class="btn btn-primary" data-bind="click: passCards, enable: passEnabled, visible: passAvailable">Pass</button>

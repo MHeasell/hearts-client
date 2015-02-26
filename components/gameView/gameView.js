@@ -28,6 +28,29 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         this.errorMessage = ko.observable(null);
 
+        this.statusMessage = ko.computed(function() {
+            switch (this.gameState()) {
+                case "passing":
+                    return "Pass three cards.";
+                case "confirm-receive-pass":
+                    return "You have been passed these cards.";
+                case "our-turn":
+                    return "It's your turn. Play a card.";
+                case "performing pass":
+                    return "Passing cards...";
+                case "waiting-for-pass":
+                    return "Waiting to receive cards...";
+                case "playing-move":
+                    return "Playing card...";
+                case "waiting-for-moves":
+                    return "Waiting for other players to play a card...";
+                case "view-trick-result":
+                    return lastPileWinner + " wins this trick.";
+                default:
+                    return null;
+            }
+        }, this);
+
         this.passAvailable = ko.computed(function() {
             return this.gameState() === "passing";
         }, this);
@@ -134,6 +157,8 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
             // add points to the winning player's total
             pointsScoredThisRound[lastPileWinner] += util.sumPoints(pileCards);
+
+            changeState("view-trick-result");
 
             // wait a bit so the player can see the result,
             // then clean up the table.
