@@ -83,38 +83,22 @@ define(['jquery'], function($) {
             return $.get(gameAddress + "/rounds/" + encodedRoundNumber + "/piles/" + encodedPileNumber + "/" + encodedCardNumber);
         };
 
-        this.waitForPileCard = function(roundNumber, pileNumber, cardNumber) {
-            var defer = $.Deferred();
-
-            (function pollPile() {
-                self.getPileCard(roundNumber, pileNumber, cardNumber)
-                    .done(function(data) {
-                        defer.resolve(data);
-                    })
-                    .fail(function(xhr) {
-                        if (xhr.status === 404) {
-                            setTimeout(pollPile, POLL_INTERVAL);
-                        }
-                        else {
-                            defer.reject();
-                        }
-                    });
-            })();
-
-            return defer.promise();
+        this.getEvent = function(eventNumber) {
+            var encodedEventNumber = encodeURIComponent(eventNumber);
+            return $.get(gameAddress + "/events/" + encodedEventNumber);
         };
 
-        this.waitForPassedCards = function(roundNumber, name, ticket) {
+        this.waitForEvent = function(eventNumber) {
             var defer = $.Deferred();
 
-            (function pollPassedCards() {
-                self.getPassedCards(roundNumber, name, ticket)
+            (function pollEvent() {
+                self.getEvent(eventNumber)
                     .done(function(data) {
                         defer.resolve(data);
                     })
                     .fail(function(xhr) {
                         if (xhr.status === 404) {
-                            setTimeout(pollPassedCards, POLL_INTERVAL);
+                            setTimeout(pollEvent, POLL_INTERVAL);
                         }
                         else {
                             defer.reject();

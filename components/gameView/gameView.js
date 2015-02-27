@@ -94,6 +94,8 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         var pointsScoredOverall = {};
 
+        var nextEventNumber = 1;
+
         function showError(msg) {
             self.errorMessage(msg);
         }
@@ -101,6 +103,33 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         function changeState(newState) {
             self.errorMessage(null);
             self.gameState(newState);
+        }
+
+        function handleEvent(event) {
+            switch (event.type) {
+                case "round_start":
+                    beginRound(event["round_number"]);
+                    break;
+                case "passing_completed":
+                    onPassingCompleted(event["round_number"]);
+                    break;
+                case "play_card":
+                    onPlayCardEvent(event["round_number"], event["pile_number"], event["card_number"], event.player, event.card);
+                    break;
+                default:
+                    throw new Error("Invalid event type: " + event.type);
+            }
+        }
+
+        function waitAndHandleNextEvent() {
+            service.waitForEvent(nextEventNumber)
+                .done(function (data) {
+                    nextEventNumber += 1;
+                    handleEvent(data);
+                })
+                .fail(function() {
+                    showError("Failed to receive event!");
+                });
         }
 
         function startPile() {
@@ -168,8 +197,8 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 }
             }
 
-            // otherwise, begin a the next round
-            beginRound();
+            // otherwise, wait for the next round
+            waitAndHandleNextEvent();
         }
 
         function addRoundPointsForDisplay(player, points) {
@@ -250,18 +279,27 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         function waitForOtherPlayerMoves() {
             changeState("waiting-for-moves");
-
-            service.waitForPileCard(roundNumber, pileNumber, nextCardNumber)
-                .done(function(data) {
-                    onReceiveNextPileCard(data["player"], data["card"]);
-                })
-                .fail(function() {
-                    showError("Failed to get next pile card!");
-                });
+            waitAndHandleNextEvent();
         }
 
         function beginTurn() {
             changeState("our-turn");
+        }
+
+        function onPlayCardEvent(rNumber, pNumber, cNumber, player, card) {
+            if (rNumber !== roundNumber) {
+                return;
+            }
+
+            if (pNumber !== pileNumber) {
+                return;
+            }
+
+            if (self.pile().length + 1 !== cNumber) {
+                return;
+            }
+
+            onReceiveNextPileCard(player, card);
         }
 
         function onReceiveNextPileCard(playerName, card) {
@@ -353,7 +391,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 service.addCardToPile(roundNumber, pileNumber, self.name, val, authTicket)
                     .done(function() {
                         self.hand.remove(val);
-                        onReceiveNextPileCard(self.name, val);
+                        waitAndHandleNextEvent();
                     })
                     .fail(function() {
                         changeState("our-turn");
@@ -383,8 +421,16 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             self.hand.removeAll(self.selectedCards());
             self.selectedCards.removeAll();
             changeState("waiting-for-pass");
+            waitAndHandleNextEvent();
+        }
 
-            service.waitForPassedCards(roundNumber, self.name, authTicket)
+        function onPassingCompleted(number) {
+            if (number !== roundNumber) {
+                // ignore irrelevant events
+                return;
+            }
+
+            service.getPassedCards(roundNumber, self.name, authTicket)
                 .done(function(data) {
                     onReceivePassedCards(data["cards"]);
                 })
@@ -411,7 +457,12 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             changeState("passing");
         }
 
-        function beginRound() {
+        function beginRound(number) {
+            if (number !== roundNumber + 1) {
+                // ignore irrelevant events
+                return;
+            }
+
             roundNumber += 1;
             lastPileWinner = null;
             heartsBroken = false;
@@ -420,7 +471,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 pointsScoredThisRound[self.players()[i]] = 0;
             }
 
-            service.waitForHand(roundNumber, self.name, authTicket)
+            service.getHand(roundNumber, self.name, authTicket)
                 .done(function(data) {
                     onReceiveHand(data["cards"]);
                 })
@@ -445,9 +496,9 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                     for (var i = 0; i < self.players().length; i++) {
                         pointsScoredOverall[self.players()[i]] = 0;
                     }
-
-                    beginRound();
                 });
+
+            waitAndHandleNextEvent();
         }
 
         beginGame();
