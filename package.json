@@ -1,0 +1,14 @@
+{
+  "name": "hearts-client",
+  "version": "0.1.0",
+  "description": "hearts browser client",
+  "devDependencies": {
+    "event-stream": "^3.2.2",
+    "gulp-clean": "^0.3.1",
+    "gulp": "^3.8.11",
+    "gulp-html-replace": "^1.4.4",
+    "gulp-concat": "^2.5.2",
+    "gulp-replace": "^0.5.3",
+    "gulp-requirejs": "^0.1.3"
+  }
+}
