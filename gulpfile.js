@@ -6,6 +6,7 @@ var htmlreplace = require('gulp-html-replace');
 var concat = require('gulp-concat');
 var clean = require('gulp-clean');
 var uglify = require('gulp-uglify');
+var minifycss = require('gulp-minify-css');
 
 var rjsOptimizerConfig = {
     mainConfigFile: 'require.config.js',
@@ -50,7 +51,8 @@ gulp.task('css', function() {
 
     var cssStream = gulp.src(cssFiles);
     var combinedCssStream = es.concat(bootstrapStream, cssStream)
-        .pipe(concat('css.css'));
+        .pipe(concat('css.css'))
+        .pipe(minifycss());
 
     var fontStream = gulp.src('bower_components/bootstrap/dist/fonts/*', { base: 'bower_components/bootstrap/dist/' });
 
