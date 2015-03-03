@@ -5,6 +5,7 @@ var es = require('event-stream');
 var htmlreplace = require('gulp-html-replace');
 var concat = require('gulp-concat');
 var clean = require('gulp-clean');
+var uglify = require('gulp-uglify');
 
 var rjsOptimizerConfig = {
     mainConfigFile: 'require.config.js',
@@ -22,7 +23,9 @@ var rjsOptimizerConfig = {
 };
 
 gulp.task('js', function() {
-    return rjs(rjsOptimizerConfig).pipe(gulp.dest('./dist/'));
+    return rjs(rjsOptimizerConfig)
+        .pipe(uglify())
+        .pipe(gulp.dest('./dist/'));
 });
 
 gulp.task('html', function() {
