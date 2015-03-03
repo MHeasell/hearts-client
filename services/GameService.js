@@ -71,7 +71,7 @@ define(['jquery'], function($) {
 
             var data = { "player": name, "card": card };
             return $.post(
-                gameAddress + "/rounds/" + encodedRoundNumber + "/piles/" + encodedPileNumber + "?ticket=" + encodedTicket,
+                gameAddress + "/rounds/" + encodedRoundNumber + "/tricks/" + encodedPileNumber + "?ticket=" + encodedTicket,
                 data);
         };
 
@@ -80,7 +80,7 @@ define(['jquery'], function($) {
             var encodedPileNumber = encodeURIComponent(pileNumber);
             var encodedCardNumber = encodeURIComponent(cardNumber);
 
-            return $.get(gameAddress + "/rounds/" + encodedRoundNumber + "/piles/" + encodedPileNumber + "/" + encodedCardNumber);
+            return $.get(gameAddress + "/rounds/" + encodedRoundNumber + "/tricks/" + encodedPileNumber + "/" + encodedCardNumber);
         };
 
         this.getEvent = function(eventNumber) {
