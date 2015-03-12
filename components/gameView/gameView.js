@@ -53,13 +53,16 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
     function GameViewModel(params) {
         var self = this;
 
+        // Initialization/game state loading logic -----------------------------
+
         var playerId = params.id;
         var authTicket = params.ticket;
         var manager = params.manager;
         var service = params.service;
         var initialGameState = params.state;
 
-        var players = initialGameState["players"];
+        var players = initialGameState["players"].map(ko.observable);
+
         var playerIndex = players.indexOf(playerId);
         var leftPlayerIndex = (playerIndex + 1) % 4;
         var rightPlayerIndex = (playerIndex + 3) % 4;
@@ -75,52 +78,41 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             heartsBroken = initialGameState["state_data"]["is_hearts_broken"];
         }
 
-        var pointsScoredThisRound = [
-            ko.observable(0),
-            ko.observable(0),
-            ko.observable(0),
-            ko.observable(0)
-        ];
+        var pointsScoredThisRound;
+        if (initialGameState["state"] === "playing") {
+            pointsScoredThisRound = initialGameState["state_data"]["round_scores"].map(ko.observable);
+        }
+        else {
+            pointsScoredThisRound = [0, 0, 0, 0].map(ko.observable);
+        }
 
-        (function () {
-            if (initialGameState["state"] === "playing") {
-                var points = initialGameState["state_data"]["round_scores"];
-                for (var i = 0; i < points.length; i++) {
-                    pointsScoredThisRound[i](points[i]);
-                }
-            }
-        })();
-
-        var pointsScoredOverall = [
-            ko.observable(0),
-            ko.observable(0),
-            ko.observable(0),
-            ko.observable(0)
-        ];
-
-        (function() {
-            var points = initialGameState["scores"];
-            for (var i = 0; i < points.length; i++) {
-                pointsScoredOverall[i](points[i]);
-            }
-        })();
+        var pointsScoredOverall = initialGameState["scores"].map(ko.observable);
 
         this.selectedCards = ko.observableArray();
 
         this.hand = ko.observableArray();
 
-        (function() {
-            if (initialGameState["state"] === "playing" || initialGameState["state"] === "passing") {
-                var hand = initialGameState["state_data"]["hand"].slice();
-                hand.sort(util.compareCards);
-                self.hand(hand);
-            }
-        })();
+        if (initialGameState["state"] === "playing" ||
+            initialGameState["state"] === "passing") {
+            this.hand(
+                initialGameState["state_data"]["hand"]
+                    .slice()
+                    .sort(util.compareCards)
+            );
+        }
 
         this.pile = ko.observableArray();
 
         if (initialGameState["state"] === "playing") {
-            this.pile(translatePile(initialGameState["state_data"]["trick"]));
+            this.pile(
+                initialGameState["state_data"]["trick"]
+                    .map(function(x) {
+                        return {
+                            card: x["card"],
+                            position: indexToPosition(x["player"])
+                        };
+                    })
+            );
         }
 
         this.gameState = ko.observable(
@@ -129,9 +121,9 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 initialGameState["state_data"],
                 playerIndex));
 
-        this.leftPlayer = ko.observable(players[leftPlayerIndex]);
-        this.rightPlayer = ko.observable(players[rightPlayerIndex]);
-        this.acrossPlayer = ko.observable(players[acrossPlayerIndex]);
+        this.leftPlayer = players[leftPlayerIndex];
+        this.rightPlayer = players[rightPlayerIndex];
+        this.acrossPlayer = players[acrossPlayerIndex];
 
         (function() {
             var cardCount = self.hand().length;
@@ -152,6 +144,8 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         this.ourTotalScore = pointsScoredOverall[playerIndex];
 
         this.errorMessage = ko.observable(null);
+
+        // computed observables ------------------------------------------------
 
         this.statusMessage = ko.computed(function() {
             switch (this.gameState()) {
@@ -191,14 +185,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             return state === "our-turn" || state === "passing";
         }, this);
 
-        function translatePile(pile) {
-            pile.map(function(x) {
-                return {
-                    card: x["card"],
-                    position: indexToPosition(x["player"])
-                };
-            });
-        }
+        // utility functions ---------------------------------------------------
 
         function showError(msg) {
             self.errorMessage(msg);
@@ -212,6 +199,18 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         function indexToPosition(playerIdx) {
             return offsetToPosition(playerIdx - playerIndex);
         }
+
+        function getMoonShootingPlayerIndex() {
+            for (var i = 0; i < pointsScoredThisRound.length; i++) {
+                if (pointsScoredThisRound[i]() === 26) {
+                    return i;
+                }
+            }
+
+            return null;
+        }
+
+        // service event handlers ----------------------------------------------
 
         service.onConnect = function() {};
         service.onError = function() {};
@@ -249,6 +248,8 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             endPile(winner, points);
         };
 
+        // game event functions ------------------------------------------------
+
         function startPile() {
             // if we have the 2 of clubs or we won the last pile,
             // we must go first
@@ -259,16 +260,6 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             else {
                 waitForOtherPlayerMoves();
             }
-        }
-
-        function getMoonShootingPlayerIndex() {
-            for (var i = 0; i < pointsScoredThisRound.length; i++) {
-                if (pointsScoredThisRound[i]() === 26) {
-                    return i;
-                }
-            }
-
-            return null;
         }
 
         function endRound() {
@@ -365,6 +356,31 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             }
         }
 
+        function onReceivePassedCards(cards) {
+            var hand = self.hand();
+            hand.push.apply(hand, cards);
+            hand.sort(util.compareCards);
+            self.hand(hand);
+            self.selectedCards(cards);
+            changeState("confirm-receive-pass");
+        }
+
+        function beginRound(hand, passDirection) {
+            lastPileWinner = null;
+            heartsBroken = false;
+
+            pointsScoredThisRound = [0, 0, 0, 0];
+
+            hand.sort(util.compareCards);
+            self.hand(hand);
+            self.leftPlayerCardCount(13);
+            self.rightPlayerCardCount(13);
+            self.acrossPlayerCardCount(13);
+            changeState("passing");
+        }
+
+        // command handlers ----------------------------------------------------
+
         this.clickCard = function(val) {
             if (self.gameState() === "passing") {
                 var idx = self.selectedCards.indexOf(val);
@@ -436,29 +452,6 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 changeState("passing");
             });
         };
-
-        function onReceivePassedCards(cards) {
-            var hand = self.hand();
-            hand.push.apply(hand, cards);
-            hand.sort(util.compareCards);
-            self.hand(hand);
-            self.selectedCards(cards);
-            changeState("confirm-receive-pass");
-        }
-
-        function beginRound(hand, passDirection) {
-            lastPileWinner = null;
-            heartsBroken = false;
-
-            pointsScoredThisRound = [0, 0, 0, 0];
-
-            hand.sort(util.compareCards);
-            self.hand(hand);
-            self.leftPlayerCardCount(13);
-            self.rightPlayerCardCount(13);
-            self.acrossPlayerCardCount(13);
-            changeState("passing");
-        }
     }
 
     return { viewModel: GameViewModel, template: tmpl };
