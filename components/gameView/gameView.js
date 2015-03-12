@@ -63,7 +63,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         var players = initialGameState["players"].map(ko.observable);
 
-        var playerIndex = players.indexOf(playerId);
+        var playerIndex = initialGameState["players"].indexOf(playerId);
         var leftPlayerIndex = (playerIndex + 1) % 4;
         var rightPlayerIndex = (playerIndex + 3) % 4;
         var acrossPlayerIndex = (playerIndex + 2) % 4;
