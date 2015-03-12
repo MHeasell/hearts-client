@@ -6,6 +6,7 @@ define(['jquery'], function($) {
         var socket = new WebSocket(serverAddress);
 
         var authPromise = null;
+        var commandPromise = null;
 
         function onAuthSuccess() {
             authPromise.resolve();
@@ -15,6 +16,16 @@ define(['jquery'], function($) {
         function onAuthFail() {
             authPromise.reject();
             authPromise = null;
+        }
+
+        function onCommandSuccess() {
+            commandPromise.resolve();
+            commandPromise = null;
+        }
+
+        function onCommandFail() {
+            commandPromise.reject();
+            commandPromise = null;
         }
 
         this.disconnect = function() {
@@ -29,21 +40,29 @@ define(['jquery'], function($) {
         };
 
         this.passCards = function(cards) {
+            commandPromise = $.Deferred();
+
             var data = {
                 "type": "pass_card",
                 "cards": [cards[0], cards[1], cards[2]]
             };
 
             socket.send(JSON.stringify(data));
+
+            return commandPromise;
         };
 
         this.playCard = function(card) {
+            commandPromise = $.Deferred();
+
             var data = {
                 "type": "play_card",
                 "card": card
             };
 
             socket.send(JSON.stringify(data));
+
+            return commandPromise;
         };
 
         this.onConnect = function() {};
@@ -77,6 +96,12 @@ define(['jquery'], function($) {
                     break;
                 case "auth_fail":
                     onAuthFail();
+                    break;
+                case "command_success":
+                    onCommandSuccess();
+                    break;
+                case "command_fail":
+                    onCommandFail();
                     break;
                 case "game_data":
                     self.onReceiveGameState(msg);

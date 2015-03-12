@@ -400,19 +400,37 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 // TODO: edge cases, e.g.
                 // * first trick, hand is entirely point cards.
 
-                changeState("playing-move");
+                var promise = service.playCard(val);
 
-                service.playCard(val);
+                changeState("playing-move");
                 self.hand.remove(val);
+
+                promise.done(function() {
+                    changeState("waiting-for-moves");
+                });
+                promise.fail(function() {
+                    console.log("Failed to play card!");
+                    changeState("our-turn");
+                });
             }
         };
 
         this.passCards = function() {
             var selectedCards = this.selectedCards();
-            service.passCards(selectedCards);
+
+            var promise = service.passCards(selectedCards);
+
+            changeState("performing-pass");
             self.hand.removeAll(self.selectedCards());
             self.selectedCards.removeAll();
-            changeState("waiting-for-pass");
+
+            promise.done(function() {
+                changeState("waiting-for-pass");
+            });
+            promise.fail(function() {
+                console.log("Failed to pass cards!");
+                changeState("passing");
+            });
         };
 
         function onReceivePassedCards(cards) {
