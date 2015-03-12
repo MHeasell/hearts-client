@@ -336,19 +336,6 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             }, PILE_END_DELAY);
         }
 
-        function getPlayerPositionDescription(playerName) {
-            var positions = ["yours", "left", "across", "right"];
-
-            var ourIndex = self.playerNumber;
-            var otherIndex = self.players.indexOf(playerName);
-            var diff = otherIndex - ourIndex;
-            if (diff < 0) {
-                diff += 4;
-            }
-
-            return positions[diff];
-        }
-
         function waitForOtherPlayerMoves() {
             changeState("waiting-for-moves");
         }
