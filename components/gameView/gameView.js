@@ -20,6 +20,16 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         return false;
     }
 
+        function isAllHearts(hand) {
+            for (var i = 0; i < hand.length; i++) {
+                if (util.parseCard(hand[i]).suit !== "h") {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
     function gameToViewState(state, data, playerIndex) {
         switch (state) {
             case "init":
@@ -412,7 +422,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                     return;
                 }
 
-                if (self.pile().length === 0 && !heartsBroken && cardSuit === "h") {
+                if (self.pile().length === 0 && !heartsBroken && cardSuit === "h" && !isAllHearts(self.hand())) {
                     showError("Hearts has not been broken yet.");
                     return;
                 }
