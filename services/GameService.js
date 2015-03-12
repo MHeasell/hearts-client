@@ -70,6 +70,7 @@ define(['jquery'], function($) {
 
         socket.onmessage = function(event) {
             var msg = JSON.parse(event.data);
+            console.log("Received: " + event.data);
             switch (msg["type"]) {
                 case "auth_success":
                     onAuthSuccess();
