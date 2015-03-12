@@ -163,9 +163,9 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         var lastPileWinner = null;
         var heartsBroken = false;
-        var pointsScoredThisRound = {};
+        var pointsScoredThisRound = [0, 0, 0, 0];
 
-        var pointsScoredOverall = {};
+        var pointsScoredOverall = [0, 0, 0, 0];
 
         function showError(msg) {
             self.errorMessage(msg);
@@ -216,7 +216,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             // if we have the 2 of clubs or we won the last pile,
             // we must go first
             if (self.hand.indexOf("c2") !== -1 ||
-                lastPileWinner === self.name) {
+                lastPileWinner === playerIndex) {
                 beginTurn();
             }
             else {
@@ -224,11 +224,10 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             }
         }
 
-        function getMoonShootingPlayer() {
-            for (var i = 0; i < self.players().length; i++) {
-                var p = self.players()[i];
-                if (pointsScoredThisRound[p] === 26) {
-                    return p;
+        function getMoonShootingPlayerIndex() {
+            for (var i = 0; i < pointsScoredThisRound.length; i++) {
+                if (pointsScoredThisRound[i] === 26) {
+                    return i;
                 }
             }
 
@@ -237,25 +236,23 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         function endRound() {
             // check whether any of the players shot the moon
-            var moonShootingPlayer = getMoonShootingPlayer();
+            var moonShootingPlayerIndex = getMoonShootingPlayerIndex();
 
             // add the scores on
-            if (moonShootingPlayer !== null) {
-                for (var k = 0; k < self.players().length; k++) {
-                    var q = self.players()[k];
-                    if (q === moonShootingPlayer) {
+            if (moonShootingPlayerIndex !== null) {
+                for (var k = 0; k < self.players.length; k++) {
+                    if (k === moonShootingPlayerIndex) {
                         continue; // no points for the shooting player
                     }
 
-                    pointsScoredOverall[q] += 26;
-                    addTotalPointsForDisplay(q, 26);
+                    pointsScoredOverall[k] += 26;
+                    addTotalPointsForDisplay(k, 26);
                 }
             }
             else {
-                for (var i = 0; i < self.players().length; i++) {
-                    var r = self.players()[i];
-                    pointsScoredOverall[r] += pointsScoredThisRound[r];
-                    addTotalPointsForDisplay(r, pointsScoredThisRound[r]);
+                for (var i = 0; i < pointsScoredOverall.length; i++) {
+                    pointsScoredOverall[i] += pointsScoredThisRound[i];
+                    addTotalPointsForDisplay(i, pointsScoredThisRound[i]);
                 }
             }
 
@@ -287,8 +284,8 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             }
         }
 
-        function addTotalPointsForDisplay(player, points) {
-            var pos = getPlayerPositionDescription(player);
+        function addTotalPointsForDisplay(playerIndex, points) {
+            var pos = indexToPosition(playerIndex);
             switch (pos) {
                 case "left":
                     self.leftPlayerRoundScore(self.leftPlayerTotalScore() + points);
@@ -452,9 +449,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             lastPileWinner = null;
             heartsBroken = false;
 
-            for (var i = 0; i < self.players().length; i++) {
-                pointsScoredThisRound[self.players()[i]] = 0;
-            }
+            pointsScoredThisRound = [0, 0, 0, 0];
 
             hand.sort(util.compareCards);
             self.hand(hand);
