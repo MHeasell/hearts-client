@@ -1,5 +1,5 @@
-require(['jquery', 'knockout', 'services/QueueService', 'mainModel', 'config', 'bootstrap'],
-    function($, ko, QueueService, MainModel, config) {
+require(['jquery', 'knockout', 'services/PlayerService', 'services/GameService', 'mainModel', 'config', 'bootstrap'],
+    function($, ko, PlayerService, GameService, MainModel, config) {
 
     $(function() {
         "use strict";
@@ -9,8 +9,13 @@ require(['jquery', 'knockout', 'services/QueueService', 'mainModel', 'config', '
 
         var mainModel = new MainModel();
 
-        var svc = new QueueService(config.serverAddress);
-        mainModel.setComponent('queueView', { manager: mainModel, service: svc });
+        var playerSvc = new PlayerService(config.serverAddress);
+        var connectFunc = function() { return new GameService(config.wsServerAddress); };
+        mainModel.setComponent('queueView', {
+            manager: mainModel,
+            playerService: playerSvc,
+            connectFunction: connectFunc
+        });
 
         ko.applyBindings(mainModel);
     });

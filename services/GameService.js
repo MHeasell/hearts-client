@@ -1,112 +1,101 @@
 define(['jquery'], function($) {
 
-    var POLL_INTERVAL = 500;
-
-    function GameService(gameAddress) {
+    function GameService(serverAddress) {
         var self = this;
 
-        this.getHand = function(roundNumber, name, ticket) {
-            var data = { "ticket": ticket };
+        var socket = new WebSocket(serverAddress);
 
-            var encodedName = encodeURIComponent(name);
+        var authPromise = null;
 
-            return $.get(
-                gameAddress + "/rounds/" + roundNumber + "/players/" + encodedName + "/hand",
-                data);
+        function onAuthSuccess() {
+            authPromise.resolve();
+            authPromise = null;
+        }
+
+        function onAuthFail() {
+            authPromise.reject();
+            authPromise = null;
+        }
+
+        this.disconnect = function() {
+            socket.close();
         };
 
-        this.waitForHand = function(roundNumber, name, ticket) {
-            var defer = $.Deferred();
-
-            (function pollHand() {
-                self.getHand(roundNumber, name, ticket)
-                    .done(function(data) {
-                        defer.resolve(data);
-                    })
-                    .fail(function(xhr) {
-                        if (xhr.status === 404) {
-                            setTimeout(pollHand, POLL_INTERVAL);
-                        }
-                        else {
-                            defer.reject();
-                        }
-                    });
-            })();
-
-            return defer.promise();
+        this.sendAuth = function(ticket) {
+            authPromise = $.Deferred();
+            var data = { "type": "auth", "ticket": ticket };
+            socket.send(JSON.stringify(data));
+            return authPromise;
         };
 
-        this.getPlayers = function() {
-            return $.get(gameAddress + "/players");
-        };
-
-        this.passCards = function(roundNumber, targetName, cards, ticket) {
+        this.passCards = function(cards) {
             var data = {
-                card1: cards[0],
-                card2: cards[1],
-                card3: cards[2]
+                "type": "pass_card",
+                "cards": [cards[0], cards[1], cards[2]]
             };
 
-            var encodedRoundNumber = encodeURIComponent(roundNumber);
-            var encodedTargetName = encodeURIComponent(targetName);
-            var encodedTicket = encodeURIComponent(ticket);
-
-            return $.post(
-                gameAddress + "/rounds/" + encodedRoundNumber + "/players/" + encodedTargetName + "/passed_cards?ticket=" + encodedTicket,
-                data);
+            socket.send(JSON.stringify(data));
         };
 
-        this.getPassedCards = function(roundNumber, name, ticket) {
-            var encodedRoundNumber = encodeURIComponent(roundNumber);
-            var encodedName = encodeURIComponent(name);
-            var encodedTicket = encodeURIComponent(ticket);
+        this.playCard = function(card) {
+            var data = {
+                "type": "play_card",
+                "card": card
+            };
 
-            return $.get(gameAddress + "/rounds/" + encodedRoundNumber + "/players/" + encodedName + "/passed_cards?ticket=" + encodedTicket);
+            socket.send(JSON.stringify(data));
         };
 
-        this.addCardToPile = function(roundNumber, pileNumber, name, card, ticket) {
-            var encodedRoundNumber = encodeURIComponent(roundNumber);
-            var encodedPileNumber = encodeURIComponent(pileNumber);
-            var encodedTicket = encodeURIComponent(ticket);
+        this.onConnect = function() {};
+        this.onError = function() {};
+        this.onDisconnect = function() {};
+        this.onReceiveGameState = function(data) {};
+        this.onStartPreround = function(hand, passDirection) {};
+        this.onFinishPreround = function(receivedCards) {};
+        this.onStartPlaying = function(hand) {};
+        this.onPlayCard = function(playerIndex, card) {};
+        this.onFinishTrick = function(winner, points) {};
 
-            var data = { "player": name, "card": card };
-            return $.post(
-                gameAddress + "/rounds/" + encodedRoundNumber + "/tricks/" + encodedPileNumber + "?ticket=" + encodedTicket,
-                data);
+        socket.onopen = function() {
+            self.onConnect();
         };
 
-        this.getPileCard = function(roundNumber, pileNumber, cardNumber) {
-            var encodedRoundNumber = encodeURIComponent(roundNumber);
-            var encodedPileNumber = encodeURIComponent(pileNumber);
-            var encodedCardNumber = encodeURIComponent(cardNumber);
-
-            return $.get(gameAddress + "/rounds/" + encodedRoundNumber + "/tricks/" + encodedPileNumber + "/" + encodedCardNumber);
+        socket.onerror = function() {
+            self.onError();
         };
 
-        this.getEvent = function(eventNumber) {
-            var encodedEventNumber = encodeURIComponent(eventNumber);
-            return $.get(gameAddress + "/events/" + encodedEventNumber);
+        socket.onclose = function() {
+            self.onDisconnect();
         };
 
-        this.waitForEvent = function(eventNumber) {
-            var defer = $.Deferred();
-
-            (function pollEvent() {
-                self.getEvent(eventNumber)
-                    .done(function(data) {
-                        defer.resolve(data);
-                    })
-                    .fail(function(xhr) {
-                        if (xhr.status === 404) {
-                            setTimeout(pollEvent, POLL_INTERVAL);
-                        }
-                        else {
-                            defer.reject();
-                        }
-                    });
-            })();
-
-            return defer.promise();
+        socket.onmessage = function(event) {
+            var msg = JSON.parse(event.data);
+            switch (msg["type"]) {
+                case "auth_success":
+                    onAuthSuccess();
+                    break;
+                case "auth_fail":
+                    onAuthFail();
+                    break;
+                case "game_data":
+                    self.onReceiveGameState(msg);
+                    break;
+                case "start_preround":
+                    self.onStartPreround(msg["hand"], msg["pass_direction"]);
+                    break;
+                case "finish_preround":
+                    self.onFinishPreround(msg["received_cards"]);
+                    break;
+                case "start_playing":
+                    self.onStartPlaying(msg["hand"]);
+                    break;
+                case "play_card":
+                    self.onPlayCard(msg["player"], msg["card"]);
+                    break;
+                case "finish_trick":
+                    self.onFinishTrick(msg["winner"], msg["points"]);
+                    break;
+            }
         };
     }
 

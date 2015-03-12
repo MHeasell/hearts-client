@@ -17,21 +17,21 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
             return this.state() === "queuing";
         }, this);
 
-        var authTicket = null;
-
         var self = this;
 
         var manager = params.manager;
 
-        var service = params.service;
+        var connectFunction = params.connectFunction;
+
+        var playerService = params.playerService;
 
         this.queue = function () {
-            var promise = service.joinQueue(this.name());
 
+            var promise = playerService.createPlayer(this.name());
             this.state("sendingRequest");
 
             promise.done(function(data) {
-                onEnterQueue(data["ticket"]);
+                onCreatedPlayer(data["id"], data["name"], data["ticket"]);
             });
 
             promise.fail(function() {
@@ -39,28 +39,36 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
             });
         };
 
-        function onEnterQueue(ticket) {
-            self.state("queuing");
-            self.authTicket = ticket;
+        function onCreatedPlayer(id, name, ticket) {
+            var service = connectFunction();
 
-            service.waitForGame(self.name(), self.authTicket)
-                .done(function(data) {
-                    onFoundGame(data["link"]);
-                })
-                .fail(function() {
-                    self.state("ready");
-                });
-        }
+            service.onConnect = function() {
+                self.state("queuing");
+                service.sendAuth(ticket)
+                    .done(function() {
+                        // do nothing,
+                        // the server will send us game state immediately.
+                    })
+                    .fail(function() {
+                        service.disconnect();
+                    });
+            };
 
-        function onFoundGame(link) {
-            var gameSvc = service.createGameService(link);
-            manager.setComponent(
-                "gameView",
-                {
-                    service: gameSvc,
-                    ticket: self.authTicket,
-                    name: self.name()
-                });
+            service.onDisconnect = function() {
+                self.state("ready");
+            };
+
+            service.onReceiveGameState = function(data) {
+                manager.setComponent(
+                    "gameView",
+                    {
+                        service: service,
+                        ticket: ticket,
+                        id: id,
+                        name: self.name(),
+                        state: data
+                    });
+            };
         }
     }
 
