@@ -5,33 +5,36 @@ define(['jquery'], function($) {
 
         var socket = new WebSocket(serverAddress);
 
-        var authPromise = null;
-        var commandPromise = null;
+        var promises = {};
 
-        function onAuthSuccess() {
-            authPromise.resolve();
-            authPromise = null;
+        var nextCommandId = 0;
+
+        function onCommandSuccess(id) {
+            promises[id].resolve();
+            delete promises[id];
         }
 
-        function onAuthFail() {
-            authPromise.reject();
-            authPromise = null;
+        function onCommandFail(id) {
+            promises[id].reject();
+            delete promises[id];
         }
 
-        function onCommandSuccess() {
-            commandPromise.resolve();
-            commandPromise = null;
-        }
-
-        function onCommandFail() {
-            commandPromise.reject();
-            commandPromise = null;
+        function getNextCommandId() {
+            return nextCommandId++;
         }
 
         function sendCommand(data) {
-            var strData = JSON.stringify(data);
+            var defer = $.Deferred();
+
+            var id = getNextCommandId();
+            var mergedData = $.extend({}, data, { "command_id": id });
+            var strData = JSON.stringify(mergedData);
             socket.send(strData);
             console.log("Sent: " + strData);
+
+            promises[id] = defer;
+
+            return defer;
         }
 
         this.disconnect = function() {
@@ -39,36 +42,26 @@ define(['jquery'], function($) {
         };
 
         this.sendAuth = function(ticket) {
-            authPromise = $.Deferred();
             var data = { "type": "auth", "ticket": ticket };
-            sendCommand(data);
-            return authPromise;
+            return sendCommand(data);
         };
 
         this.passCards = function(cards) {
-            commandPromise = $.Deferred();
-
             var data = {
                 "type": "pass_card",
                 "cards": [cards[0], cards[1], cards[2]]
             };
 
-            sendCommand(data);
-
-            return commandPromise;
+            return sendCommand(data);
         };
 
         this.playCard = function(card) {
-            commandPromise = $.Deferred();
-
             var data = {
                 "type": "play_card",
                 "card": card
             };
 
-            sendCommand(data);
-
-            return commandPromise;
+            return sendCommand(data);
         };
 
         this.onConnect = function() {};
@@ -97,17 +90,11 @@ define(['jquery'], function($) {
             var msg = JSON.parse(event.data);
             console.log("Received: " + event.data);
             switch (msg["type"]) {
-                case "auth_success":
-                    onAuthSuccess();
-                    break;
-                case "auth_fail":
-                    onAuthFail();
-                    break;
                 case "command_success":
-                    onCommandSuccess();
+                    onCommandSuccess(msg["command_id"]);
                     break;
                 case "command_fail":
-                    onCommandFail();
+                    onCommandFail(msg["command_id"]);
                     break;
                 case "game_data":
                     self.onReceiveGameState(msg);
