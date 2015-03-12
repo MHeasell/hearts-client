@@ -384,11 +384,6 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             }
         }
 
-        this.confirmReceiveCards = function() {
-            this.selectedCards.removeAll();
-            startPile();
-        };
-
         this.clickCard = function(val) {
             if (self.gameState() === "passing") {
                 var idx = self.selectedCards.indexOf(val);
