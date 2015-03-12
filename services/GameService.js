@@ -28,6 +28,12 @@ define(['jquery'], function($) {
             commandPromise = null;
         }
 
+        function sendCommand(data) {
+            var strData = JSON.stringify(data);
+            socket.send(strData);
+            console.log("Sent: " + strData);
+        }
+
         this.disconnect = function() {
             socket.close();
         };
@@ -35,7 +41,7 @@ define(['jquery'], function($) {
         this.sendAuth = function(ticket) {
             authPromise = $.Deferred();
             var data = { "type": "auth", "ticket": ticket };
-            socket.send(JSON.stringify(data));
+            sendCommand(data);
             return authPromise;
         };
 
@@ -47,7 +53,7 @@ define(['jquery'], function($) {
                 "cards": [cards[0], cards[1], cards[2]]
             };
 
-            socket.send(JSON.stringify(data));
+            sendCommand(data);
 
             return commandPromise;
         };
@@ -60,7 +66,7 @@ define(['jquery'], function($) {
                 "card": card
             };
 
-            socket.send(JSON.stringify(data));
+            sendCommand(data);
 
             return commandPromise;
         };
