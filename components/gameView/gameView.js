@@ -167,6 +167,8 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                     return lastPileWinner + " wins this trick.";
                 case "game-over":
                     return "The game is over!";
+                case "disconnected":
+                    return "Lost connection to the game.";
                 default:
                     return null;
             }
@@ -212,13 +214,25 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         // service event handlers ----------------------------------------------
 
-        service.onConnect = function() {};
+        service.onConnect = function() {};  // should not happen
         service.onError = function() {};
         service.onDisconnect = function() {
             changeState("disconnected");
         };
 
-        service.onReceiveGameState = function() {};
+        service.onReceiveGameState = function(state) {
+            // reconstruct the whole view for the new state
+            manager.setComponent(
+                "gameView",
+                {
+                    service: service,
+                    ticket: authTicket,
+                    id: playerId,
+                    name: self.name,
+                    state: state
+                }
+            );
+        };
 
         service.onStartPreround = function(hand, passDirection) {
             beginRound(hand, passDirection);
