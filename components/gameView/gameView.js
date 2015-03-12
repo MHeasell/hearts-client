@@ -398,7 +398,6 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 }
 
                 // TODO: edge cases, e.g.
-                // * hearts not broken, but no other suit available.
                 // * first trick, hand is entirely point cards.
 
                 changeState("playing-move");
