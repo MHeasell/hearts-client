@@ -237,8 +237,12 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             startPile();
         };
 
-        service.onPlayCard = function(playerIndex, card) {
-            onReceiveNextPileCard(playerIndex, card);
+        service.onPlayCard = function(player, card) {
+            if (player === playerIndex) {
+                return;
+            }
+
+            onReceiveNextPileCard(player, card);
         };
 
         service.onFinishTrick = function(winner, points) {
@@ -406,7 +410,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 self.hand.remove(val);
 
                 promise.done(function() {
-                    changeState("waiting-for-moves");
+                    onReceiveNextPileCard(playerIndex, val);
                 });
                 promise.fail(function() {
                     console.log("Failed to play card!");
