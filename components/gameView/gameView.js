@@ -59,7 +59,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         var service = params.service;
         var initialGameState = params.state;
 
-        var players = initialGameState.players;
+        var players = initialGameState["players"];
         var playerIndex = players.indexOf(playerId);
         var leftPlayerIndex = (playerIndex + 1) % 4;
         var rightPlayerIndex = (playerIndex + 3) % 4;
@@ -69,66 +69,87 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         this.name = params.name;
 
+        var lastPileWinner = null;
+        var heartsBroken = false;
+        if (initialGameState["state"] === "playing") {
+            heartsBroken = initialGameState["state_data"]["is_hearts_broken"];
+        }
+
+        var pointsScoredThisRound = [
+            ko.observable(0),
+            ko.observable(0),
+            ko.observable(0),
+            ko.observable(0)
+        ];
+
+        (function () {
+            if (initialGameState["state"] === "playing") {
+                var points = initialGameState["state_data"]["round_scores"];
+                for (var i = 0; i < points.length; i++) {
+                    pointsScoredThisRound[i](points[i]);
+                }
+            }
+        })();
+
+        var pointsScoredOverall = [
+            ko.observable(0),
+            ko.observable(0),
+            ko.observable(0),
+            ko.observable(0)
+        ];
+
+        (function() {
+            var points = initialGameState["scores"];
+            for (var i = 0; i < points.length; i++) {
+                pointsScoredOverall[i](points[i]);
+            }
+        })();
+
         this.selectedCards = ko.observableArray();
 
-        function translatePile(pile) {
-            pile.map(function(x) {
-                return {
-                    card: x["card"],
-                    position: indexToPosition(x["player"])
-                };
-            });
+        this.hand = ko.observableArray();
+
+        (function() {
+            if (initialGameState["state"] === "playing" || initialGameState["state"] === "passing") {
+                var hand = initialGameState["state_data"]["hand"].slice();
+                hand.sort(util.compareCards);
+                self.hand(hand);
+            }
+        })();
+
+        this.pile = ko.observableArray();
+
+        if (initialGameState["state"] === "playing") {
+            this.pile(translatePile(initialGameState["state_data"]["trick"]));
         }
 
-        function setUpObservables(state) {
-            this.hand = ko.observableArray();
+        this.gameState = ko.observable(
+            gameToViewState(
+                initialGameState["state"],
+                initialGameState["state_data"],
+                playerIndex));
 
-            if (state["state"] === "playing" || state["state"] === "passing") {
-                this.hand(state["state_data"]["hand"]);
-            }
+        this.leftPlayer = ko.observable(players[leftPlayerIndex]);
+        this.rightPlayer = ko.observable(players[rightPlayerIndex]);
+        this.acrossPlayer = ko.observable(players[acrossPlayerIndex]);
 
-            this.pile = ko.observableArray();
+        (function() {
+            var cardCount = self.hand().length;
+            var pile = self.pile();
+            self.leftPlayerCardCount = ko.observable(cardCount - (positionHasPlayed("left", pile) ? 1 : 0));
+            self.acrossPlayerCardCount = ko.observable(cardCount - (positionHasPlayed("across", pile) ? 1 : 0));
+            self.rightPlayerCardCount = ko.observable(cardCount - (positionHasPlayed("right", pile) ? 1 : 0));
+        })();
 
-            if (state["state"] === "playing") {
-                this.pile = translatePile(state["state_data"]["trick"]);
-            }
+        this.leftPlayerRoundScore = pointsScoredThisRound[leftPlayerIndex];
+        this.rightPlayerRoundScore = pointsScoredThisRound[rightPlayerIndex];
+        this.acrossPlayerRoundScore = pointsScoredThisRound[acrossPlayerIndex];
+        this.ourRoundScore = pointsScoredThisRound[playerIndex];
 
-            this.gameState = ko.observable(
-                gameToViewState(
-                    state["state"],
-                    state["state_data"],
-                    playerIndex));
-
-            this.leftPlayer = ko.observable(players[leftPlayerIndex]);
-            this.rightPlayer = ko.observable(players[rightPlayerIndex]);
-            this.acrossPlayer = ko.observable(players[acrossPlayerIndex]);
-
-            var cardCount = this.hand().length;
-            var pile = this.pile();
-            this.leftPlayerCardCount = ko.observable(cardCount - (positionHasPlayed("left", pile)?1:0));
-            this.acrossPlayerCardCount = ko.observable(cardCount - (positionHasPlayed("across", pile)?1:0));
-            this.rightPlayerCardCount = ko.observable(cardCount - (positionHasPlayed("right", pile)?1:0));
-
-            this.leftPlayerRoundScore = ko.observable(0);
-            this.rightPlayerRoundScore = ko.observable(0);
-            this.acrossPlayerRoundScore = ko.observable(0);
-            this.ourRoundScore = ko.observable(0);
-
-            if (state["state"] == "playing") {
-                var roundScores = state["state_data"]["round_scores"];
-                this.leftPlayerRoundScore(roundScores[leftPlayerIndex]);
-                this.rightPlayerRoundScore(roundScores[rightPlayerIndex]);
-                this.acrossPlayerRoundScore(roundScores[acrossPlayerIndex]);
-                this.ourRoundScore(roundScores[playerIndex]);
-            }
-
-            this.leftPlayerTotalScore = ko.observable(state["scores"][leftPlayerIndex]);
-            this.rightPlayerTotalScore = ko.observable(state["scores"][rightPlayerIndex]);
-            this.acrossPlayerTotalScore = ko.observable(state["scores"][acrossPlayerIndex]);
-            this.ourTotalScore = ko.observable(state["scores"][playerIndex]);
-        }
-
-        setUpObservables.call(self, initialGameState);
+        this.leftPlayerTotalScore = pointsScoredOverall[leftPlayerIndex];
+        this.rightPlayerTotalScore = pointsScoredOverall[rightPlayerIndex];
+        this.acrossPlayerTotalScore = pointsScoredOverall[acrossPlayerIndex];
+        this.ourTotalScore = pointsScoredOverall[playerIndex];
 
         this.errorMessage = ko.observable(null);
 
@@ -170,12 +191,14 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             return state === "our-turn" || state === "passing";
         }, this);
 
-
-        var lastPileWinner = null;
-        var heartsBroken = false;
-        var pointsScoredThisRound = [0, 0, 0, 0];
-
-        var pointsScoredOverall = [0, 0, 0, 0];
+        function translatePile(pile) {
+            pile.map(function(x) {
+                return {
+                    card: x["card"],
+                    position: indexToPosition(x["player"])
+                };
+            });
+        }
 
         function showError(msg) {
             self.errorMessage(msg);
@@ -236,7 +259,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         function getMoonShootingPlayerIndex() {
             for (var i = 0; i < pointsScoredThisRound.length; i++) {
-                if (pointsScoredThisRound[i] === 26) {
+                if (pointsScoredThisRound[i]() === 26) {
                     return i;
                 }
             }
@@ -255,60 +278,22 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                         continue; // no points for the shooting player
                     }
 
-                    pointsScoredOverall[k] += 26;
-                    addTotalPointsForDisplay(k, 26);
+                    pointsScoredOverall[k](pointsScoredOverall[k]() + 26);
                 }
             }
             else {
                 for (var i = 0; i < pointsScoredOverall.length; i++) {
-                    pointsScoredOverall[i] += pointsScoredThisRound[i];
-                    addTotalPointsForDisplay(i, pointsScoredThisRound[i]);
+                    pointsScoredOverall[i](pointsScoredOverall[i]() + pointsScoredThisRound[i]());
                 }
             }
 
             // the game is over if someone goes over 100
             for (var l = 0; l < self.players().length; l++) {
                 var s = self.players()[l];
-                if (pointsScoredOverall[s] >= 100) {
+                if (pointsScoredOverall[s]() >= 100) {
                     changeState("game-over");
                     return;
                 }
-            }
-        }
-
-        function addRoundPointsForDisplay(playerIndex, points) {
-            var pos = indexToPosition(playerIndex);
-            switch (pos) {
-                case "left":
-                    self.leftPlayerRoundScore(self.leftPlayerRoundScore() + points);
-                    break;
-                case "right":
-                    self.rightPlayerRoundScore(self.rightPlayerRoundScore() + points);
-                    break;
-                case "across":
-                    self.acrossPlayerRoundScore(self.acrossPlayerRoundScore() + points);
-                    break;
-                case "yours":
-                    self.ourRoundScore(self.ourRoundScore() + points);
-                    break;
-            }
-        }
-
-        function addTotalPointsForDisplay(playerIndex, points) {
-            var pos = indexToPosition(playerIndex);
-            switch (pos) {
-                case "left":
-                    self.leftPlayerRoundScore(self.leftPlayerTotalScore() + points);
-                    break;
-                case "right":
-                    self.rightPlayerRoundScore(self.rightPlayerTotalScore() + points);
-                    break;
-                case "across":
-                    self.acrossPlayerRoundScore(self.acrossPlayerTotalScore() + points);
-                    break;
-                case "yours":
-                    self.ourRoundScore(self.ourTotalScore() + points);
-                    break;
             }
         }
 
@@ -317,9 +302,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             lastPileWinner = winIndex;
 
             // add points to the winning player's total
-            pointsScoredThisRound[lastPileWinner] += points;
-
-            addRoundPointsForDisplay(winIndex, points);
+            pointsScoredThisRound[lastPileWinner](pointsScoredThisRound[lastPileWinner]() + points);
 
             changeState("view-trick-result");
 
