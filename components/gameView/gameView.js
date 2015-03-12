@@ -353,7 +353,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 heartsBroken = true;
             }
 
-            else if (pos === "right" && self.pile().length < 4) {
+            if (pos === "right" && self.pile().length < 4) {
                 beginTurn();
             }
             else {
