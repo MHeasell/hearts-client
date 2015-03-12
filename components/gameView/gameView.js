@@ -65,7 +65,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             pile.map(function(x) {
                 return {
                     card: x["card"],
-                    position: offsetToPosition(x["player"] - playerIndex)
+                    position: indexToPosition(x["player"])
                 };
             });
         }
@@ -351,7 +351,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         }
 
         function onReceiveNextPileCard(player, card) {
-            var pos = offsetToPosition(player - playerIndex);
+            var pos = indexToPosition(player);
 
             self.pile.push({
                 "position": pos,
