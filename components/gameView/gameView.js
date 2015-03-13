@@ -149,6 +149,10 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         this.statusMessage = ko.computed(function() {
             switch (this.gameState()) {
+                case "init":
+                    return "Waiting for the game to begin...";
+                case "wait-for-round":
+                    return "Waiting for the next round to start...";
                 case "passing":
                     return "Pass three cards.";
                 case "confirm-receive-pass":
@@ -234,20 +238,12 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             );
         };
 
-        service.onStartPreround = function(hand, passDirection) {
-            beginRound(hand, passDirection);
+        service.onStartRound = function(roundNumber, hand) {
+            beginRound(roundNumber, hand);
         };
 
-        service.onFinishPreround = function(receivedCards) {
+        service.onFinishPassing = function(receivedCards) {
             onReceivePassedCards(receivedCards);
-        };
-
-        service.onStartPlaying = function(hand) {
-            hand.sort(util.compareCards);
-            self.hand(hand);
-            self.selectedCards.removeAll();
-            isFirstTrick = true;
-            startPile();
         };
 
         service.onPlayCard = function(player, card) {
@@ -256,10 +252,6 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             }
 
             onReceiveNextPileCard(player, card);
-        };
-
-        service.onFinishTrick = function(winner, points) {
-            endPile(winner, points);
         };
 
         // game event functions ------------------------------------------------
@@ -296,22 +288,38 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 }
             }
 
-            // the game is over if someone goes over 100
+            // the game is over if someone gets to 100
             for (var l = 0; l < self.players().length; l++) {
                 var s = self.players()[l];
                 if (pointsScoredOverall[s]() >= 100) {
-                    changeState("game-over");
+                    endGame();
                     return;
                 }
             }
+
+            waitForRoundStart();
         }
 
-        function endPile(winIndex, points) {
+        function endGame() {
+            changeState("game-over");
+        }
+
+        function waitForRoundStart() {
+            changeState("wait-for-round");
+        }
+
+        function endPile() {
             isFirstTrick = false;
-            lastPileWinner = winIndex;
+
+            // figure out the winner
+            var pile = self.pile();
+            var cards = pile.map(function(x) { return x.card; });
+            lastPileWinner = pile[util.findWinningIndex(cards)].player;
 
             // add points to the winning player's total
-            pointsScoredThisRound[lastPileWinner](pointsScoredThisRound[lastPileWinner]() + points);
+            var points = util.sumPoints(cards);
+            var prevPoints = pointsScoredThisRound[lastPileWinner]();
+            pointsScoredThisRound[lastPileWinner](prevPoints + points);
 
             changeState("view-trick-result");
 
@@ -362,7 +370,10 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 heartsBroken = true;
             }
 
-            if (pos === "right" && self.pile().length < 4) {
+            if (self.pile().length === 4) {
+                endPile();
+            }
+            else if (pos === "right") {
                 beginTurn();
             }
             else {
@@ -377,11 +388,17 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             self.hand(hand);
             self.selectedCards(cards);
             changeState("confirm-receive-pass");
+
+            setTimeout(function() {
+                self.selectedCards.removeAll();
+                startPlaying();
+            }, PILE_END_DELAY);
         }
 
-        function beginRound(hand, passDirection) {
+        function beginRound(roundNumber, hand) {
             lastPileWinner = null;
             heartsBroken = false;
+            isFirstTrick = true;
 
             pointsScoredThisRound = [0, 0, 0, 0];
 
@@ -390,7 +407,21 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             self.leftPlayerCardCount(13);
             self.rightPlayerCardCount(13);
             self.acrossPlayerCardCount(13);
+
+            if (roundNumber % 4 === 3) {
+                startPassing();
+            }
+            else {
+                startPlaying();
+            }
+        }
+
+        function startPassing() {
             changeState("passing");
+        }
+
+        function startPlaying() {
+            startPile();
         }
 
         // command handlers ----------------------------------------------------

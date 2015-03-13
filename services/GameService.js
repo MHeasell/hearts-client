@@ -68,11 +68,10 @@ define(['jquery'], function($) {
         this.onError = function() {};
         this.onDisconnect = function() {};
         this.onReceiveGameState = function(data) {};
-        this.onStartPreround = function(hand, passDirection) {};
-        this.onFinishPreround = function(receivedCards) {};
+        this.onStartRound = function(roundNumber, hand) {};
+        this.onFinishPassing = function(receivedCards) {};
         this.onStartPlaying = function(hand) {};
         this.onPlayCard = function(playerIndex, card) {};
-        this.onFinishTrick = function(winner, points) {};
 
         socket.onopen = function() {
             self.onConnect();
@@ -99,20 +98,14 @@ define(['jquery'], function($) {
                 case "game_data":
                     self.onReceiveGameState(msg);
                     break;
-                case "start_preround":
-                    self.onStartPreround(msg["hand"], msg["pass_direction"]);
+                case "start_round":
+                    self.onStartRound(msg["round_number"], msg["hand"]);
                     break;
-                case "finish_preround":
-                    self.onFinishPreround(msg["received_cards"]);
-                    break;
-                case "start_playing":
-                    self.onStartPlaying(msg["hand"]);
+                case "finish_passing":
+                    self.onFinishPassing(msg["received_cards"]);
                     break;
                 case "play_card":
                     self.onPlayCard(msg["player"], msg["card"]);
-                    break;
-                case "finish_trick":
-                    self.onFinishTrick(msg["winner"], msg["points"]);
                     break;
             }
         };
