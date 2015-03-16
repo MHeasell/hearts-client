@@ -254,6 +254,14 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             onReceiveNextPileCard(player, card);
         };
 
+        service.onPlayerConnected = function(playerIndex, playerId) {
+            players[playerIndex](playerId);
+        };
+
+        service.onPlayerDisconnected = function(playerIndex) {
+            players[playerIndex](null);
+        };
+
         // game event functions ------------------------------------------------
 
         function startPile() {

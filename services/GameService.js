@@ -72,6 +72,8 @@ define(['jquery'], function($) {
         this.onFinishPassing = function(receivedCards) {};
         this.onStartPlaying = function(hand) {};
         this.onPlayCard = function(playerIndex, card) {};
+        this.onPlayerConnected = function(playerIndex, playerId) {};
+        this.onPlayerDisconnected = function(playerIndex) {};
 
         socket.onopen = function() {
             self.onConnect();
@@ -106,6 +108,12 @@ define(['jquery'], function($) {
                     break;
                 case "play_card":
                     self.onPlayCard(msg["player"], msg["card"]);
+                    break;
+                case "player_connected":
+                    self.onPlayerConnected(msg["index"], msg["player"]);
+                    break;
+                case "player_disconnected":
+                    self.onPlayerDisconnected(msg["index"]);
                     break;
             }
         };
