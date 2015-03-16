@@ -19,6 +19,11 @@ define(['jquery'], function($) {
             delete promises[id];
         }
 
+        function onQuerySuccess(id, data) {
+            promises[id].resolve(data);
+            delete promises[id];
+        }
+
         function getNextCommandId() {
             return nextCommandId++;
         }
@@ -64,10 +69,18 @@ define(['jquery'], function($) {
             return sendCommand(data);
         };
 
+        this.requestGameState = function() {
+            var data = {
+                type: "get_state"
+            };
+
+            return sendCommand(data);
+        };
+
         this.onConnect = function() {};
         this.onError = function() {};
         this.onDisconnect = function() {};
-        this.onReceiveGameState = function(data) {};
+        this.onConnectedToGame = function() {};
         this.onStartRound = function(roundNumber, hand) {};
         this.onFinishPassing = function(receivedCards) {};
         this.onStartPlaying = function(hand) {};
@@ -97,8 +110,11 @@ define(['jquery'], function($) {
                 case "command_fail":
                     onCommandFail(msg["command_id"]);
                     break;
-                case "game_data":
-                    self.onReceiveGameState(msg);
+                case "query_success":
+                    onQuerySuccess(msg["command_id"], msg["data"]);
+                    break;
+                case "connected_to_game":
+                    self.onConnectedToGame();
                     break;
                 case "start_round":
                     self.onStartRound(msg["round_number"], msg["hand"]);

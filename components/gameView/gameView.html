@@ -2,7 +2,7 @@
 
 <div class="table">
     <div class="acrossSide">
-        <span data-bind="text: acrossPlayer"></span>
+        <span data-bind="text: acrossPlayerName"></span>
         <span data-bind="text: acrossPlayerRoundScore"></span>
         (<span data-bind="text: acrossPlayerTotalScore"></span>)
         <ul class="hand" data-bind="foreach: new Array(acrossPlayerCardCount())">
@@ -12,7 +12,7 @@
 
     <div class="midStrip">
         <div class="leftSide">
-            <span data-bind="text: leftPlayer"></span>
+            <span data-bind="text: leftPlayerName"></span>
             <span data-bind="text: leftPlayerRoundScore"></span>
             (<span data-bind="text: leftPlayerTotalScore"></span>)
             <ul class="hand-vertical" data-bind="foreach: new Array(leftPlayerCardCount())">
@@ -21,7 +21,7 @@
         </div>
 
         <div class="rightSide">
-            <span data-bind="text: rightPlayer"></span>
+            <span data-bind="text: rightPlayerName"></span>
             <span data-bind="text: rightPlayerRoundScore"></span>
             (<span data-bind="text: rightPlayerTotalScore"></span>)
             <ul class="hand-vertical" data-bind="foreach: new Array(rightPlayerCardCount())">
@@ -34,7 +34,7 @@
     </div>
 
     <div class="yourSide">
-        <span data-bind="text: name"></span>
+        <span data-bind="text: playerName"></span>
         <span data-bind="text: ourRoundScore"></span>
         (<span data-bind="text: ourTotalScore"></span>)
         <ul class="hand" data-bind="foreach: hand, css { selectable: handIsSelectable }">

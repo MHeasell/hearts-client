@@ -59,91 +59,152 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         var authTicket = params.ticket;
         var manager = params.manager;
         var service = params.service;
-        var initialGameState = params.state;
 
-        var players = initialGameState["players"].map(ko.observable);
+        this.playerName = ko.observable();
+        this.leftPlayerName = ko.observable();
+        this.rightPlayerName = ko.observable();
+        this.acrossPlayerName = ko.observable();
 
-        var playerIndex = initialGameState["players"].indexOf(playerId);
-        var leftPlayerIndex = (playerIndex + 1) % 4;
-        var rightPlayerIndex = (playerIndex + 3) % 4;
-        var acrossPlayerIndex = (playerIndex + 2) % 4;
+        this.ourRoundScore = ko.observable();
+        this.leftPlayerRoundScore = ko.observable();
+        this.rightPlayerRoundScore = ko.observable();
+        this.acrossPlayerRoundScore = ko.observable();
+
+        this.leftPlayerTotalScore = ko.observable();
+        this.rightPlayerTotalScore = ko.observable();
+        this.acrossPlayerTotalScore = ko.observable();
+        this.ourTotalScore = ko.observable();
+
+        var playerIndex = 0;
+        var leftPlayerIndex = 1;
+        var rightPlayerIndex = 3;
+        var acrossPlayerIndex = 2;
+
+        var players = new Array(4);
+        players[playerIndex] = this.playerName;
+        players[leftPlayerIndex] = this.leftPlayerName;
+        players[rightPlayerIndex] = this.rightPlayerName;
+        players[acrossPlayerIndex] = this.acrossPlayerName;
+
+        var pointsScoredThisRound = new Array(4);
+        pointsScoredThisRound[playerIndex] = this.ourRoundScore;
+        pointsScoredThisRound[leftPlayerIndex] = this.leftPlayerRoundScore;
+        pointsScoredThisRound[rightPlayerIndex] = this.rightPlayerRoundScore;
+        pointsScoredThisRound[acrossPlayerIndex] = this.acrossPlayerRoundScore;
+
+        var pointsScoredOverall = new Array(4);
+        pointsScoredOverall[playerIndex] = this.ourTotalScore;
+        pointsScoredOverall[leftPlayerIndex] = this.leftPlayerTotalScore;
+        pointsScoredOverall[rightPlayerIndex] = this.rightPlayerTotalScore;
+        pointsScoredOverall[acrossPlayerIndex] = this.acrossPlayerTotalScore;
 
         var isFirstTrick = false;
 
-        this.name = params.name;
-
         var lastPileWinner = null;
         var heartsBroken = false;
-        if (initialGameState["state"] === "playing") {
-            heartsBroken = initialGameState["state_data"]["is_hearts_broken"];
-        }
-
-        var pointsScoredThisRound;
-        if (initialGameState["state"] === "playing") {
-            pointsScoredThisRound = initialGameState["state_data"]["round_scores"].map(ko.observable);
-        }
-        else {
-            pointsScoredThisRound = [0, 0, 0, 0].map(ko.observable);
-        }
-
-        var pointsScoredOverall = initialGameState["scores"].map(ko.observable);
 
         this.selectedCards = ko.observableArray();
 
         this.hand = ko.observableArray();
 
-        if (initialGameState["state"] === "playing" ||
-            initialGameState["state"] === "passing") {
-            this.hand(
-                initialGameState["state_data"]["hand"]
-                    .slice()
-                    .sort(util.compareCards)
-            );
-        }
-
         this.pile = ko.observableArray();
 
-        if (initialGameState["state"] === "playing") {
-            this.pile(
-                initialGameState["state_data"]["trick"]
-                    .map(function(x) {
-                        return {
-                            card: x["card"],
-                            position: indexToPosition(x["player"])
-                        };
-                    })
-            );
-        }
+        this.gameState = ko.observable("unloaded");
 
-        this.gameState = ko.observable(
-            gameToViewState(
-                initialGameState["state"],
-                initialGameState["state_data"],
-                playerIndex));
-
-        this.leftPlayer = players[leftPlayerIndex];
-        this.rightPlayer = players[rightPlayerIndex];
-        this.acrossPlayer = players[acrossPlayerIndex];
-
-        (function() {
-            var cardCount = self.hand().length;
-            var pile = self.pile();
-            self.leftPlayerCardCount = ko.observable(cardCount - (positionHasPlayed("left", pile) ? 1 : 0));
-            self.acrossPlayerCardCount = ko.observable(cardCount - (positionHasPlayed("across", pile) ? 1 : 0));
-            self.rightPlayerCardCount = ko.observable(cardCount - (positionHasPlayed("right", pile) ? 1 : 0));
-        })();
-
-        this.leftPlayerRoundScore = pointsScoredThisRound[leftPlayerIndex];
-        this.rightPlayerRoundScore = pointsScoredThisRound[rightPlayerIndex];
-        this.acrossPlayerRoundScore = pointsScoredThisRound[acrossPlayerIndex];
-        this.ourRoundScore = pointsScoredThisRound[playerIndex];
-
-        this.leftPlayerTotalScore = pointsScoredOverall[leftPlayerIndex];
-        this.rightPlayerTotalScore = pointsScoredOverall[rightPlayerIndex];
-        this.acrossPlayerTotalScore = pointsScoredOverall[acrossPlayerIndex];
-        this.ourTotalScore = pointsScoredOverall[playerIndex];
+        this.leftPlayerCardCount = ko.observable(0);
+        this.rightPlayerCardCount = ko.observable(0);
+        this.acrossPlayerCardCount = ko.observable(0);
 
         this.errorMessage = ko.observable(null);
+
+        function applyGameState(initialGameState) {
+
+            playerIndex = initialGameState["players"].indexOf(playerId);
+            leftPlayerIndex = (playerIndex + 1) % 4;
+            rightPlayerIndex = (playerIndex + 3) % 4;
+            acrossPlayerIndex = (playerIndex + 2) % 4;
+
+            players[playerIndex] = self.playerName;
+            players[leftPlayerIndex] = self.leftPlayerName;
+            players[rightPlayerIndex] = self.rightPlayerName;
+            players[acrossPlayerIndex] = self.acrossPlayerName;
+
+            pointsScoredThisRound[playerIndex] = self.ourRoundScore;
+            pointsScoredThisRound[leftPlayerIndex] = self.leftPlayerRoundScore;
+            pointsScoredThisRound[rightPlayerIndex] = self.rightPlayerRoundScore;
+            pointsScoredThisRound[acrossPlayerIndex] = self.acrossPlayerRoundScore;
+
+            pointsScoredOverall[playerIndex] = self.ourTotalScore;
+            pointsScoredOverall[leftPlayerIndex] = self.leftPlayerTotalScore;
+            pointsScoredOverall[rightPlayerIndex] = self.rightPlayerTotalScore;
+            pointsScoredOverall[acrossPlayerIndex] = self.acrossPlayerTotalScore;
+
+            (function() {
+                for (var i = 0; i < players.length; i++) {
+                    players[i](initialGameState["players"][i]);
+                }
+            })();
+
+            if (initialGameState["state"] === "playing") {
+                (function() {
+                    for (var i = 0; i < pointsScoredThisRound.length; i++) {
+                        pointsScoredThisRound[i](initialGameState["state_data"]["round_scores"][i]);
+                    }
+                })();
+            }
+            else {
+                (function() {
+                    for (var i = 0; i < pointsScoredThisRound.length; i++) {
+                        pointsScoredThisRound[i](0);
+                    }
+                })();
+            }
+
+            (function() {
+                for (var i = 0; i < pointsScoredOverall.length; i++) {
+                    pointsScoredOverall[i](initialGameState["scores"][i]);
+                }
+            })();
+
+            if (initialGameState["state"] === "playing") {
+                heartsBroken = initialGameState["state_data"]["is_hearts_broken"];
+            }
+
+            if (initialGameState["state"] === "playing" ||
+                initialGameState["state"] === "passing") {
+                self.hand(
+                    initialGameState["state_data"]["hand"]
+                        .slice()
+                        .sort(util.compareCards)
+                );
+            }
+
+            if (initialGameState["state"] === "playing") {
+                self.pile(
+                    initialGameState["state_data"]["trick"]
+                        .map(function(x) {
+                            return {
+                                card: x["card"],
+                                position: indexToPosition(x["player"])
+                            };
+                        })
+                );
+            }
+
+            self.gameState(
+                gameToViewState(
+                    initialGameState["state"],
+                    initialGameState["state_data"],
+                    playerIndex));
+
+            (function() {
+                var cardCount = self.hand().length;
+                var pile = self.pile();
+                self.leftPlayerCardCount(cardCount - (positionHasPlayed("left", pile) ? 1 : 0));
+                self.acrossPlayerCardCount(cardCount - (positionHasPlayed("across", pile) ? 1 : 0));
+                self.rightPlayerCardCount(cardCount - (positionHasPlayed("right", pile) ? 1 : 0));
+            })();
+        }
 
         // computed observables ------------------------------------------------
 
@@ -222,20 +283,6 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         service.onError = function() {};
         service.onDisconnect = function() {
             changeState("disconnected");
-        };
-
-        service.onReceiveGameState = function(state) {
-            // reconstruct the whole view for the new state
-            manager.setComponent(
-                "gameView",
-                {
-                    service: service,
-                    ticket: authTicket,
-                    id: playerId,
-                    name: self.name,
-                    state: state
-                }
-            );
         };
 
         service.onStartRound = function(roundNumber, hand) {
@@ -505,6 +552,14 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 changeState("passing");
             });
         };
+
+        // game init logic -----------------------------------------------------
+
+        service.requestGameState()
+            .done(applyGameState)
+            .fail(function() {
+                showError("Failed to get game state!");
+            });
     }
 
     return { viewModel: GameViewModel, template: tmpl };

@@ -58,7 +58,7 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
                 self.state("ready");
             };
 
-            service.onReceiveGameState = function(data) {
+            service.onConnectedToGame = function(data) {
                 manager.setComponent(
                     "gameView",
                     {
