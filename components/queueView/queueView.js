@@ -3,11 +3,18 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
     function QueueViewModel(params) {
         this.name = ko.observable("Steve");
 
+        this.password = ko.observable();
+
         this.state = ko.observable("ready");
 
         this.canEditPlayerName = ko.computed(function() {
             return this.state() === "ready";
         }, this);
+
+        this.canEditPassword = ko.computed(function() {
+            return this.state() === "ready";
+        }, this);
+
 
         this.queueButtonEnabled = ko.computed(function() {
             return this.state() === "ready";
@@ -27,7 +34,7 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
 
         this.queue = function () {
 
-            var promise = playerService.createPlayer(this.name());
+            var promise = playerService.createPlayer(this.name(), this.password());
             this.state("sendingRequest");
 
             promise.done(function(data) {

@@ -2,7 +2,13 @@
 
 <p>Play Hearts with strangers!</p>
 
-<label for="playerNameInput">Name:</label>
-<input id="playerNameInput" type="text" data-bind="value: name, enable: canEditPlayerName" />
+<div>
+    <label for="playerNameInput">Name:</label>
+    <input id="playerNameInput" type="text" data-bind="value: name, enable: canEditPlayerName" />
+</div>
+<div>
+    <label for="playerPassswordInput">Password (optional):</label>
+    <input id="playerPassswordInput" type="password" data-bind="value: password, enable: canEditPassword" />
+</div>
 <button class="btn btn-primary" data-bind="click: queue, enable: queueButtonEnabled">Queue for Game</button>
 <div data-bind="visible: showLoadingMessage">Waiting for game...</div>
