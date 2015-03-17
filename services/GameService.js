@@ -83,7 +83,6 @@ define(['jquery'], function($) {
         this.onConnectedToGame = function() {};
         this.onStartRound = function(roundNumber, hand) {};
         this.onFinishPassing = function(receivedCards) {};
-        this.onStartPlaying = function(hand) {};
         this.onPlayCard = function(playerIndex, card) {};
         this.onPlayerConnected = function(playerIndex, playerId) {};
         this.onPlayerDisconnected = function(playerIndex) {};
