@@ -23,15 +23,15 @@
 
 .hand li {
     display: inline-block;
-    margin-left: -59px;
+    margin-left: -55px;
     position: relative;
 }
 
 .hand.selectable li:hover::before {
     content: '';
     display: block;
-    width: 71px;
-    height: 96px;
+    width: 70px;
+    height: 95px;
     position: absolute;
     top: 0;
     left: 0;
