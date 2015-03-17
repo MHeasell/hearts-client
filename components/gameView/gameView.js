@@ -59,6 +59,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         var authTicket = params.ticket;
         var manager = params.manager;
         var service = params.service;
+        var playerService = params.playerService;
 
         this.playerName = ko.observable();
         this.leftPlayerName = ko.observable();
@@ -141,7 +142,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
             (function() {
                 for (var i = 0; i < players.length; i++) {
-                    players[i](initialGameState["players"][i]);
+                    resolvePlayer(i, initialGameState["players"][i]);
                 }
             })();
 
@@ -258,6 +259,17 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             self.errorMessage(msg);
         }
 
+        function resolvePlayer(index, id) {
+            players[index]("Player #" + id);
+            playerService.getPlayer(id)
+                .done(function(data) {
+                    players[index](data["name"]);
+                })
+                .fail(function() {
+                    console.log("Failed to get player name for: " + id);
+                });
+        }
+
         function changeState(newState) {
             self.errorMessage(null);
             self.gameState(newState);
@@ -302,7 +314,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         };
 
         service.onPlayerConnected = function(playerIndex, playerId) {
-            players[playerIndex](playerId);
+            resolvePlayer(playerIndex, playerId);
         };
 
         service.onPlayerDisconnected = function(playerIndex) {

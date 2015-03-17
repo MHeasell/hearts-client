@@ -70,6 +70,7 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
                     "gameView",
                     {
                         service: service,
+                        playerService: playerService,
                         ticket: ticket,
                         id: id
                     });
