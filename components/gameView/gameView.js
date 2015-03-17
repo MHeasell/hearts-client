@@ -215,7 +215,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 case "wait-for-round":
                     return "Waiting for the next round to start...";
                 case "passing":
-                    return "Pass three cards.";
+                    return "Choose three cards to pass.";
                 case "confirm-receive-pass":
                     return "You have been passed these cards.";
                 case "our-turn":

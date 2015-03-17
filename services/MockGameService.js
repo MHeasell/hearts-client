@@ -42,6 +42,25 @@ define(['jquery'], function($) {
 
             return defer.promise();
         };
+
+        this.playCard = function(card) {
+            var defer = $.Deferred();
+            defer.resolve();
+
+            setTimeout(function() {
+                self.onPlayCard(1, "c7");
+
+                setTimeout(function() {
+                    self.onPlayCard(2, "s3");
+
+                    //setTimeout(function() {
+                    //    self.onPlayCard(3, "d6");
+                    //}, 1000);
+                }, 1000);
+            }, 1000);
+
+            return defer.promise();
+        };
     }
 
     return MockGameService;

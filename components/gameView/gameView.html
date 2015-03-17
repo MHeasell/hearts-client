@@ -40,10 +40,13 @@
         <ul class="hand" data-bind="foreach: hand, css { selectable: handIsSelectable }">
             <li data-bind="attr: { class: 'card card-' + $data }, css: { selected: $parent.selectedCards.indexOf($data) !== -1 }, click: $parent.clickCard"></li>
         </ul>
-        <div class="alert alert-info" role="alert" data-bind="visible: statusMessage() !== null, text: statusMessage">Blah</div>
-        <div class="alert alert-danger" role="alert" data-bind="visible: errorMessage() !== null, text: errorMessage">Blah</div>
-        <div class="actionPanel">
-            <button class="btn btn-primary" data-bind="click: passCards, enable: passEnabled, visible: passAvailable">Pass</button>
+        <div class="right-panel">
+            <button class="btn btn-primary" data-bind="click: passCards, enable: passEnabled, visible: passAvailable">Pass Cards</button>
         </div>
     </div>
+</div>
+
+<div class="info-panel">
+    <div class="alert alert-info" role="alert" data-bind="visible: statusMessage() !== null, text: statusMessage">Blah</div>
+    <div class="alert alert-danger" role="alert" data-bind="visible: errorMessage() !== null, text: errorMessage">Blah</div>
 </div>

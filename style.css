@@ -95,6 +95,18 @@
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+    background-color: #009900;
+    border: 4px solid #008800;
+    box-shadow: 0 0 20px 0 #000000;
+    padding: 10px;
+    color: #ffffff;
+}
+
+.info-panel {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 }
 
 .yourSide {
