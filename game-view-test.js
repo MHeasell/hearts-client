@@ -9,10 +9,9 @@ function(ko, GameService, MainModel) {
 
     model.setComponent('gameView',
         {
-            manager: model,
             service: svc,
             ticket: "fake-ticket",
-            name: "Joe"
+            id: 1
         });
 
     ko.applyBindings(model);
