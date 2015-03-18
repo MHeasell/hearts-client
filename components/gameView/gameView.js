@@ -369,6 +369,8 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         // game event functions ------------------------------------------------
 
         function startPile() {
+            self.pile.removeAll();
+
             // if we have the 2 of clubs or we won the last pile,
             // we must go first
             if (self.hand.indexOf("c2") !== -1 ||
@@ -452,9 +454,16 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             changeState("view-trick-result");
 
             // wait a bit so the player can see the result,
-            // then clean up the table.
+            // then move on.
             setTimeout(function() {
-                self.pile.removeAll();
+                // Small hack to limit problems due to events happening
+                // while we were waiting.
+                // To be replaced with a proper system later.
+                if (self.gameState() !== "view-trick-result") {
+                    console.log("Game state changed before cleaning up trick.");
+                    return;
+                }
+
                 if (self.hand().length === 0) {
                     endRound();
                 }
