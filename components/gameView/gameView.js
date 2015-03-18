@@ -253,7 +253,10 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 case "waiting-for-moves":
                     return "Waiting for other players to play a card...";
                 case "view-trick-result":
-                    return lastPileWinner + " wins this trick.";
+                    if (lastPileWinner === playerIndex) {
+                        return "You win this trick.";
+                    }
+                    return players[lastPileWinner]() + " wins this trick.";
                 case "game-over":
                     return "The game is over!";
                 case "disconnected":
