@@ -192,6 +192,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
             if (initialGameState["state"] === "playing") {
                 heartsBroken = initialGameState["state_data"]["is_hearts_broken"];
+                isFirstTrick = initialGameState["state_data"]["is_first_trick"];
             }
 
             if (initialGameState["state"] === "playing" ||
@@ -517,10 +518,6 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         }
 
         function beginRound(roundNumber, hand) {
-            lastPileWinner = null;
-            heartsBroken = false;
-            isFirstTrick = true;
-
             pointsScoredThisRound = [0, 0, 0, 0];
 
             hand.sort(util.compareCards);
@@ -542,6 +539,10 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         }
 
         function startPlaying() {
+            lastPileWinner = null;
+            heartsBroken = false;
+            isFirstTrick = true;
+
             startPile();
         }
 
