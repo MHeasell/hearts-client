@@ -383,6 +383,8 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         }
 
         function endRound() {
+            self.pile.removeAll();
+
             // check whether any of the players shot the moon
             var moonShootingPlayerIndex = getMoonShootingPlayerIndex();
 
