@@ -531,7 +531,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         // command handlers ----------------------------------------------------
 
-        this.clickCard = function(val) {
+        this.clickCard = function(val, evt, index) {
             if (self.gameState() === "passing") {
                 var idx = self.selectedCards.indexOf(val);
                 if (idx >= 0) {
@@ -580,6 +580,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 });
                 promise.fail(function() {
                     console.log("Failed to play card!");
+                    self.hand.splice(index, 0, val);
                     changeState("our-turn");
                 });
             }
