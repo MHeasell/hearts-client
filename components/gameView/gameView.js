@@ -324,6 +324,12 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             return null;
         }
 
+        function resetPointsScoredThisRound() {
+            for (var i = 0; i < pointsScoredThisRound.length; i++) {
+                pointsScoredThisRound[i](0);
+            }
+        }
+
         // service event handlers ----------------------------------------------
 
         service.onConnect = function() {};  // should not happen
@@ -518,7 +524,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         }
 
         function beginRound(roundNumber, hand) {
-            pointsScoredThisRound = [0, 0, 0, 0];
+            resetPointsScoredThisRound();
 
             hand.sort(util.compareCards);
             self.hand(hand);
