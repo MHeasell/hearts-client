@@ -46,7 +46,7 @@
             (<span data-bind="text: ourTotalScore"></span>)
         </p>
         <ul class="hand" data-bind="foreach: hand, css { selectable: handIsSelectable }">
-            <li data-bind="attr: { class: 'card card-' + $data }, css: { selected: $parent.selectedCards.indexOf($data) !== -1 }, click: function(d, e) { $parent.clickCard(d, e, $index); }"></li>
+            <li data-bind="attr: { class: 'card card-' + $data }, css: { selected: $parent.selectedCards.indexOf($data) !== -1 }, click: $parent.clickCard }"></li>
         </ul>
         <div class="right-panel">
             <button class="btn btn-primary" data-bind="click: passCards, enable: passEnabled, visible: passAvailable">Pass Cards</button>
