@@ -379,30 +379,46 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
             // add the scores on
             if (moonShootingPlayerIndex !== null) {
-                for (var k = 0; k < self.players.length; k++) {
-                    if (k === moonShootingPlayerIndex) {
-                        continue; // no points for the shooting player
-                    }
-
-                    pointsScoredOverall[k](pointsScoredOverall[k]() + 26);
-                }
+                addPointsToOverallExcept(26, moonShootingPlayerIndex);
             }
             else {
-                for (var i = 0; i < pointsScoredOverall.length; i++) {
-                    pointsScoredOverall[i](pointsScoredOverall[i]() + pointsScoredThisRound[i]());
-                }
+                addPointsFromRoundToOverall();
             }
 
             // the game is over if someone gets to 100
-            for (var l = 0; l < self.players().length; l++) {
-                var s = self.players()[l];
-                if (pointsScoredOverall[s]() >= 100) {
-                    endGame();
-                    return;
+            if (hasOverallScoreReachedOneHundred()) {
+                endGame();
+            }
+            else {
+                waitForRoundStart();
+            }
+        }
+
+        function addPointsToOverallExcept(points, exceptIndex) {
+            for (var i = 0; i < pointsScoredOverall.length; i++) {
+                if (i === exceptIndex) {
+                    continue; // no points for the excluded index
+                }
+
+                pointsScoredOverall[i](pointsScoredOverall[i]() + points);
+            }
+        }
+
+        function addPointsFromRoundToOverall() {
+            for (var i = 0; i < pointsScoredOverall.length; i++) {
+                pointsScoredOverall[i](pointsScoredOverall[i]() + pointsScoredThisRound[i]());
+            }
+        }
+
+        function hasOverallScoreReachedOneHundred() {
+            for (var i = 0; i < pointsScoredOverall.length; i++) {
+                var s = pointsScoredOverall[i]();
+                if (s >= 100) {
+                    return true;
                 }
             }
 
-            waitForRoundStart();
+            return false;
         }
 
         function endGame() {
