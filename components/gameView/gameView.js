@@ -115,6 +115,8 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         var lastPileWinner = null;
         var heartsBroken = false;
 
+        var currentRoundNumber = null;
+
         this.selectedCards = ko.observableArray();
 
         this.hand = ko.observableArray();
@@ -202,6 +204,8 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                         .slice()
                         .sort(util.compareCards)
                 );
+
+                currentRoundNumber = initialGameState["state_data"]["round_number"];
             }
 
             if (initialGameState["state"] === "playing") {
@@ -240,7 +244,9 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 case "wait-for-round":
                     return "Waiting for the next round to start...";
                 case "passing":
-                    return "Choose three cards to pass.";
+                    var passIdx = (playerIndex + util.getPassOffset(util.getPassDirection(currentRoundNumber))) % 4;
+                    var passName = players[passIdx]();
+                    return "Choose three cards to pass to " + passName + ".";
                 case "confirm-receive-pass":
                     return "You have been passed these cards.";
                 case "our-turn":
@@ -539,6 +545,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         function beginRound(roundNumber, hand) {
             resetPointsScoredThisRound();
             self.pile.removeAll();
+            currentRoundNumber = roundNumber;
 
             hand.sort(util.compareCards);
             self.hand(hand);

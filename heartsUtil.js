@@ -126,8 +126,7 @@ define([], function() {
 
     function getPassDirection(roundNumber) {
         var dirs = ["left", "right", "across", "none"];
-        var idx = (roundNumber - 1) % 4;
-        return dirs[idx];
+        return dirs[roundNumber % 4];
     }
 
     function getPassOffset(direction) {
