@@ -1,7 +1,7 @@
 <h1>Hearts Game</h1>
 
 <div class="table">
-    <div class="acrossSide">
+    <div class="acrossSide" data-bind="css: { 'grayed-out': !acrossPlayerIsConnected() }">
         <span data-bind="text: acrossPlayerName"></span>
         <span data-bind="text: acrossPlayerRoundScore"></span>
         (<span data-bind="text: acrossPlayerTotalScore"></span>)
@@ -11,7 +11,7 @@
     </div>
 
     <div class="midStrip">
-        <div class="leftSide">
+        <div class="leftSide" data-bind="css: { 'grayed-out': !leftPlayerIsConnected() }">
             <span data-bind="text: leftPlayerName"></span>
             <span data-bind="text: leftPlayerRoundScore"></span>
             (<span data-bind="text: leftPlayerTotalScore"></span>)
@@ -20,7 +20,7 @@
             </ul>
         </div>
 
-        <div class="rightSide">
+        <div class="rightSide" data-bind="css: { 'grayed-out': !rightPlayerIsConnected() }">
             <span data-bind="text: rightPlayerName"></span>
             <span data-bind="text: rightPlayerRoundScore"></span>
             (<span data-bind="text: rightPlayerTotalScore"></span>)
@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <div class="yourSide">
+    <div class="yourSide" data-bind="css: { 'grayed-out': !playerIsConnected() }">
         <span data-bind="text: playerName"></span>
         <span data-bind="text: ourRoundScore"></span>
         (<span data-bind="text: ourTotalScore"></span>)

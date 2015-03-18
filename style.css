@@ -122,3 +122,10 @@
     height: 300px;
     position: relative;
 }
+
+.grayed-out {
+    filter: gray;
+    filter: grayscale(1);
+    -webkit-filter: grayscale(1);
+    color: #CCCCCC;
+}

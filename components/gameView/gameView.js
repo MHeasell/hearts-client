@@ -66,6 +66,11 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         this.rightPlayerName = ko.observable();
         this.acrossPlayerName = ko.observable();
 
+        this.playerIsConnected = ko.observable(false);
+        this.leftPlayerIsConnected = ko.observable(false);
+        this.rightPlayerIsConnected = ko.observable(false);
+        this.acrossPlayerIsConnected = ko.observable(false);
+
         this.ourRoundScore = ko.observable();
         this.leftPlayerRoundScore = ko.observable();
         this.rightPlayerRoundScore = ko.observable();
@@ -86,6 +91,12 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         players[leftPlayerIndex] = this.leftPlayerName;
         players[rightPlayerIndex] = this.rightPlayerName;
         players[acrossPlayerIndex] = this.acrossPlayerName;
+
+        var playersConnected = new Array(4);
+        playersConnected[playerIndex] = this.playerIsConnected;
+        playersConnected[leftPlayerIndex] = this.leftPlayerIsConnected;
+        playersConnected[rightPlayerIndex] = this.rightPlayerIsConnected;
+        playersConnected[acrossPlayerIndex] = this.acrossPlayerIsConnected;
 
         var pointsScoredThisRound = new Array(4);
         pointsScoredThisRound[playerIndex] = this.ourRoundScore;
@@ -142,7 +153,14 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
             (function() {
                 for (var i = 0; i < players.length; i++) {
-                    resolvePlayer(i, initialGameState["players"][i]);
+                    var p = initialGameState["players"][i];
+                    if (p !== null) {
+                        playersConnected[i](true);
+                        resolvePlayer(i, p);
+                    }
+                    else {
+                        playersConnected[i](false);
+                    }
                 }
             })();
 
@@ -253,6 +271,10 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             return state === "our-turn" || state === "passing";
         }, this);
 
+        this.acrossPlayerIsGrayedOut = ko.computed(function() {
+            return !this.acrossPlayerIsConnected();
+        }, this);
+
         // utility functions ---------------------------------------------------
 
         function showError(msg) {
@@ -316,10 +338,12 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         };
 
         service.onPlayerConnected = function(playerIndex, playerId) {
+            playersConnected[playerIndex](true);
             resolvePlayer(playerIndex, playerId);
         };
 
         service.onPlayerDisconnected = function(playerIndex) {
+            playersConnected[playerIndex](false);
             players[playerIndex](null);
         };
 
