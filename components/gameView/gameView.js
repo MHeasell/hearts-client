@@ -514,10 +514,10 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             self.acrossPlayerCardCount(13);
 
             if (roundNumber % 4 === 3) {
-                startPassing();
+                startPlaying();
             }
             else {
-                startPlaying();
+                startPassing();
             }
         }
 
