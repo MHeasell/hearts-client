@@ -15,10 +15,13 @@
 
 .hand {
     list-style-type: none;
-    overflow: auto;
+    overflow: hidden;
     padding: 0;
     margin: 0;
+    margin-bottom: 10px;
     padding-top: 10px;
+    margin-top: -10px;
+    line-height: 0;
 }
 
 .hand li {
@@ -77,7 +80,7 @@
     float: right;
 }
 
-.rightSide .hand-vertical {
+.leftSide .hand-vertical {
     transform: rotate(180deg);
 }
 
@@ -87,7 +90,6 @@
 
 .acrossSide .hand {
     text-align: center;
-    transform: rotate(180deg);
 }
 
 .table {

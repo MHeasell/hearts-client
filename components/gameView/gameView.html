@@ -2,9 +2,11 @@
 
 <div class="table" data-bind="css: { 'grayed-out': tableGrayedOut }">
     <div class="acrossSide" data-bind="css: { 'grayed-out': !acrossPlayerIsConnected() }">
-        <span data-bind="text: acrossPlayerName"></span>
-        <span data-bind="text: acrossPlayerRoundScore"></span>
-        (<span data-bind="text: acrossPlayerTotalScore"></span>)
+        <p>
+            <span data-bind="text: acrossPlayerName"></span>
+            <span data-bind="text: acrossPlayerRoundScore"></span>
+            (<span data-bind="text: acrossPlayerTotalScore"></span>)
+        </p>
         <ul class="hand" data-bind="foreach: new Array(acrossPlayerCardCount())">
             <li class="card card-back"></li>
         </ul>
@@ -12,18 +14,22 @@
 
     <div class="midStrip">
         <div class="leftSide" data-bind="css: { 'grayed-out': !leftPlayerIsConnected() }">
-            <span data-bind="text: leftPlayerName"></span>
-            <span data-bind="text: leftPlayerRoundScore"></span>
-            (<span data-bind="text: leftPlayerTotalScore"></span>)
+            <p>
+                <span data-bind="text: leftPlayerName"></span>
+                <span data-bind="text: leftPlayerRoundScore"></span>
+                (<span data-bind="text: leftPlayerTotalScore"></span>)
+            </p>
             <ul class="hand-vertical" data-bind="foreach: new Array(leftPlayerCardCount())">
                 <li class="card-h card-back-h"></li>
             </ul>
         </div>
 
         <div class="rightSide" data-bind="css: { 'grayed-out': !rightPlayerIsConnected() }">
-            <span data-bind="text: rightPlayerName"></span>
-            <span data-bind="text: rightPlayerRoundScore"></span>
-            (<span data-bind="text: rightPlayerTotalScore"></span>)
+            <p>
+                <span data-bind="text: rightPlayerName"></span>
+                <span data-bind="text: rightPlayerRoundScore"></span>
+                (<span data-bind="text: rightPlayerTotalScore"></span>)
+            </p>
             <ul class="hand-vertical" data-bind="foreach: new Array(rightPlayerCardCount())">
                 <li class="card-h card-back-h"></li>
             </ul>
@@ -34,9 +40,11 @@
     </div>
 
     <div class="yourSide" data-bind="css: { 'grayed-out': !playerIsConnected() }">
-        <span data-bind="text: playerName"></span>
-        <span data-bind="text: ourRoundScore"></span>
-        (<span data-bind="text: ourTotalScore"></span>)
+        <p>
+            <span data-bind="text: playerName"></span>
+            <span data-bind="text: ourRoundScore"></span>
+            (<span data-bind="text: ourTotalScore"></span>)
+        </p>
         <ul class="hand" data-bind="foreach: hand, css { selectable: handIsSelectable }">
             <li data-bind="attr: { class: 'card card-' + $data }, css: { selected: $parent.selectedCards.indexOf($data) !== -1 }, click: $parent.clickCard"></li>
         </ul>
