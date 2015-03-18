@@ -1,6 +1,6 @@
 <h1>Hearts Game</h1>
 
-<div class="table">
+<div class="table" data-bind="css: { 'grayed-out': tableGrayedOut }">
     <div class="acrossSide" data-bind="css: { 'grayed-out': !acrossPlayerIsConnected() }">
         <span data-bind="text: acrossPlayerName"></span>
         <span data-bind="text: acrossPlayerRoundScore"></span>

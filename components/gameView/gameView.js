@@ -275,6 +275,10 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             return !this.acrossPlayerIsConnected();
         }, this);
 
+        this.tableGrayedOut = ko.computed(function() {
+            return this.gameState() === "disconnected";
+        }, this);
+
         // utility functions ---------------------------------------------------
 
         function showError(msg) {
