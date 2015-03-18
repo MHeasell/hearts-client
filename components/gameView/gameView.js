@@ -396,6 +396,8 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 addPointsFromRoundToOverall();
             }
 
+            resetPointsScoredThisRound();
+
             // the game is over if someone gets to 100
             if (hasOverallScoreReachedOneHundred()) {
                 endGame();
@@ -536,6 +538,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         function beginRound(roundNumber, hand) {
             resetPointsScoredThisRound();
+            self.pile.removeAll();
 
             hand.sort(util.compareCards);
             self.hand(hand);
