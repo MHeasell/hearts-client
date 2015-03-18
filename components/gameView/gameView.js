@@ -630,7 +630,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             var promise = service.passCards(selectedCards);
 
             changeState("performing-pass");
-            self.hand.removeAll(self.selectedCards());
+            var cards = self.hand.removeAll(self.selectedCards());
             self.selectedCards.removeAll();
 
             promise.done(function() {
@@ -638,6 +638,12 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             });
             promise.fail(function() {
                 console.log("Failed to pass cards!");
+
+                // put the cards back in the player's hand
+                var tmpHand = self.hand().concat(cards);
+                tmpHand.sort(util.compareCards);
+                self.hand(tmpHand);
+
                 changeState("passing");
             });
         };
