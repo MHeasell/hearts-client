@@ -316,7 +316,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         service.onConnect = function() {};  // should not happen
         service.onError = function() {};
         service.onDisconnect = function() {
-            if (self.state() !== "game-over") {
+            if (self.gameState() !== "game-over") {
                 changeState("disconnected");
             }
         };
