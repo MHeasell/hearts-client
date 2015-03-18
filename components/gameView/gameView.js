@@ -141,6 +141,11 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             players[rightPlayerIndex] = self.rightPlayerName;
             players[acrossPlayerIndex] = self.acrossPlayerName;
 
+            playersConnected[playerIndex] = self.playerIsConnected;
+            playersConnected[leftPlayerIndex] = self.leftPlayerIsConnected;
+            playersConnected[rightPlayerIndex] = self.rightPlayerIsConnected;
+            playersConnected[acrossPlayerIndex] = self.acrossPlayerIsConnected;
+
             pointsScoredThisRound[playerIndex] = self.ourRoundScore;
             pointsScoredThisRound[leftPlayerIndex] = self.leftPlayerRoundScore;
             pointsScoredThisRound[rightPlayerIndex] = self.rightPlayerRoundScore;
