@@ -294,7 +294,9 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
         service.onConnect = function() {};  // should not happen
         service.onError = function() {};
         service.onDisconnect = function() {
-            changeState("disconnected");
+            if (self.state() !== "game-over") {
+                changeState("disconnected");
+            }
         };
 
         service.onStartRound = function(roundNumber, hand) {
