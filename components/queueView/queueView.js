@@ -7,21 +7,19 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
 
         this.state = ko.observable("ready");
 
-        this.canEditPlayerName = ko.computed(function() {
+        this.errorMessage = ko.observable(null);
+
+        this.queueFormEnabled = ko.computed(function() {
             return this.state() === "ready";
         }, this);
 
-        this.canEditPassword = ko.computed(function() {
-            return this.state() === "ready";
-        }, this);
+        this.queueButtonLabel = ko.computed(function() {
+            var state = this.state();
+            if (state === "ready") {
+                return "Queue for Game";
+            }
 
-
-        this.queueButtonEnabled = ko.computed(function() {
-            return this.state() === "ready";
-        }, this);
-
-        this.showLoadingMessage = ko.computed(function() {
-            return this.state() === "queuing";
+            return "Queuing...";
         }, this);
 
         var self = this;
@@ -33,6 +31,7 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
         var playerService = params.playerService;
 
         this.queue = function () {
+            self.errorMessage(null);
 
             var promise = playerService.createPlayer(this.name(), this.password());
             this.state("sendingRequest");
@@ -41,7 +40,14 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
                 onCreatedPlayer(data["id"], data["name"], data["ticket"]);
             });
 
-            promise.fail(function() {
+            promise.fail(function(xhr, textStatus) {
+                if (xhr.status === 409) {
+                    self.errorMessage("This name has already been taken.");
+                }
+                else {
+                    self.errorMessage("Could not create your account. Please try again later.");
+                }
+
                 self.state("ready");
             });
         };
@@ -53,8 +59,8 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
                 self.state("queuing");
                 service.sendAuth(ticket)
                     .done(function() {
-                        // do nothing,
-                        // the server will send us game state immediately.
+                        // Do nothing.
+                        // The server will notify us when we get a game.
                     })
                     .fail(function() {
                         service.disconnect();
@@ -63,6 +69,7 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
 
             service.onDisconnect = function() {
                 self.state("ready");
+                self.errorMessage("Could not connect to the game server.");
             };
 
             service.onConnectedToGame = function() {

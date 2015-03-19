@@ -1,14 +1,30 @@
-<h1>Welcome!</h1>
 
-<p>Play Hearts with strangers!</p>
+<div class="row">
 
-<div>
-    <label for="playerNameInput">Name:</label>
-    <input id="playerNameInput" type="text" data-bind="value: name, enable: canEditPlayerName" />
+    <div class="col-sm-6 col-sm-push-3">
+        <h1>Hearts</h1>
+
+        <p>Play with strangers!</p>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <form data-bind="submit: queue">
+                    <div class="alert alert-danger" data-bind="text: errorMessage, visible: errorMessage() !== null"></div>
+                    <div class="form-group">
+                        <label for="playerNameInput" class="control-label">Name</label>
+                        <input type="text" id="playerNameInput" class="form-control" data-bind="value: name, enable: queueFormEnabled" />
+                    </div>
+                    <div class="form-group">
+                        <label for="playerPassswordInput" class="control-label">Password (optional)</label>
+                        <input type="password" id="playerPassswordInput" class="form-control" data-bind="value: password, enable: queueFormEnabled" />
+                        <p class="help-block">
+                            Providing a password allows you to rejoin the game
+                            if you lose connection.
+                        </p>
+                    </div>
+                    <button type="submit" class="btn btn-primary" data-bind="text: queueButtonLabel, enable: queueFormEnabled">Queue for Game</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <label for="playerPassswordInput">Password (optional):</label>
-    <input id="playerPassswordInput" type="password" data-bind="value: password, enable: canEditPassword" />
-</div>
-<button class="btn btn-primary" data-bind="click: queue, enable: queueButtonEnabled">Queue for Game</button>
-<div data-bind="visible: showLoadingMessage">Waiting for game...</div>
