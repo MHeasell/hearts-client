@@ -1,60 +1,65 @@
-<h1>Hearts Game</h1>
+<div class="row">
+    <div class="col-md-10 col-md-push-1 col-lg-8 col-lg-push-2">
+        <h1>Hearts</h1>
 
-<div class="table" data-bind="css: { 'grayed-out': tableGrayedOut }">
-    <div class="acrossSide" data-bind="css: { 'grayed-out': !acrossPlayerIsConnected() }">
-        <p>
-            <span data-bind="text: acrossPlayerName"></span>
-            <span data-bind="text: acrossPlayerRoundScore"></span>
-            (<span data-bind="text: acrossPlayerTotalScore"></span>)
-        </p>
-        <ul class="hand" data-bind="foreach: new Array(acrossPlayerCardCount())">
-            <li class="card card-back"></li>
-        </ul>
+        <div class="table" data-bind="css: { 'grayed-out': tableGrayedOut }">
+            <div class="acrossSide" data-bind="css: { 'grayed-out': !acrossPlayerIsConnected() }">
+                <p>
+                    <span data-bind="text: acrossPlayerName"></span>
+                    <span data-bind="text: acrossPlayerRoundScore"></span>
+                    (<span data-bind="text: acrossPlayerTotalScore"></span>)
+                </p>
+                <ul class="hand" data-bind="foreach: new Array(acrossPlayerCardCount())">
+                    <li class="card card-back"></li>
+                </ul>
+            </div>
+
+            <div class="midStrip">
+                <div class="leftSide" data-bind="css: { 'grayed-out': !leftPlayerIsConnected() }">
+                    <p>
+                        <span data-bind="text: leftPlayerName"></span>
+                        <span data-bind="text: leftPlayerRoundScore"></span>
+                        (<span data-bind="text: leftPlayerTotalScore"></span>)
+                    </p>
+                    <ul class="hand-vertical" data-bind="foreach: new Array(leftPlayerCardCount())">
+                        <li class="card-h card-back-h"></li>
+                    </ul>
+                </div>
+
+                <div class="rightSide" data-bind="css: { 'grayed-out': !rightPlayerIsConnected() }">
+                    <p>
+                        <span data-bind="text: rightPlayerName"></span>
+                        <span data-bind="text: rightPlayerRoundScore"></span>
+                        (<span data-bind="text: rightPlayerTotalScore"></span>)
+                    </p>
+                    <ul class="hand-vertical" data-bind="foreach: new Array(rightPlayerCardCount())">
+                        <li class="card-h card-back-h"></li>
+                    </ul>
+                </div>
+                <div class="playArea" data-bind="foreach: pile">
+                    <div class="card" data-bind="css: 'card-' + position + ' card-' + card"></div>
+                </div>
+            </div>
+
+            <div class="yourSide" data-bind="css: { 'grayed-out': !playerIsConnected() }">
+                <div class="info-panel">
+                    <div class="game-infobox" role="alert" data-bind="visible: statusMessage() !== null, text: statusMessage">Blah</div>
+                </div>
+                <p>
+                    <span data-bind="text: playerName"></span>
+                    <span data-bind="text: ourRoundScore"></span>
+                    (<span data-bind="text: ourTotalScore"></span>)
+                </p>
+                <ul class="hand" data-bind="foreach: hand, css { selectable: handIsSelectable }">
+                    <li data-bind="attr: { class: 'card card-' + $data }, css: { selected: $parent.selectedCards.indexOf($data) !== -1 }, click: $parent.clickCard"></li>
+                </ul>
+                <div class="error-panel">
+                    <div class="game-alertbox" data-bind="visible: errorMessage() !== null, text: errorMessage"></div>
+                </div>
+                <div class="right-panel">
+                    <button class="btn btn-primary" data-bind="click: passCards, enable: passEnabled, visible: passAvailable">Pass Cards</button>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="midStrip">
-        <div class="leftSide" data-bind="css: { 'grayed-out': !leftPlayerIsConnected() }">
-            <p>
-                <span data-bind="text: leftPlayerName"></span>
-                <span data-bind="text: leftPlayerRoundScore"></span>
-                (<span data-bind="text: leftPlayerTotalScore"></span>)
-            </p>
-            <ul class="hand-vertical" data-bind="foreach: new Array(leftPlayerCardCount())">
-                <li class="card-h card-back-h"></li>
-            </ul>
-        </div>
-
-        <div class="rightSide" data-bind="css: { 'grayed-out': !rightPlayerIsConnected() }">
-            <p>
-                <span data-bind="text: rightPlayerName"></span>
-                <span data-bind="text: rightPlayerRoundScore"></span>
-                (<span data-bind="text: rightPlayerTotalScore"></span>)
-            </p>
-            <ul class="hand-vertical" data-bind="foreach: new Array(rightPlayerCardCount())">
-                <li class="card-h card-back-h"></li>
-            </ul>
-        </div>
-        <div class="playArea" data-bind="foreach: pile">
-            <div class="card" data-bind="css: 'card-' + position + ' card-' + card"></div>
-        </div>
-    </div>
-
-    <div class="yourSide" data-bind="css: { 'grayed-out': !playerIsConnected() }">
-        <p>
-            <span data-bind="text: playerName"></span>
-            <span data-bind="text: ourRoundScore"></span>
-            (<span data-bind="text: ourTotalScore"></span>)
-        </p>
-        <ul class="hand" data-bind="foreach: hand, css { selectable: handIsSelectable }">
-            <li data-bind="attr: { class: 'card card-' + $data }, css: { selected: $parent.selectedCards.indexOf($data) !== -1 }, click: $parent.clickCard"></li>
-        </ul>
-        <div class="right-panel">
-            <button class="btn btn-primary" data-bind="click: passCards, enable: passEnabled, visible: passAvailable">Pass Cards</button>
-        </div>
-    </div>
-</div>
-
-<div class="info-panel">
-    <div class="alert alert-info" role="alert" data-bind="visible: statusMessage() !== null, text: statusMessage">Blah</div>
-    <div class="alert alert-danger" role="alert" data-bind="visible: errorMessage() !== null, text: errorMessage">Blah</div>
 </div>
