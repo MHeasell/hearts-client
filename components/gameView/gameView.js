@@ -208,6 +208,12 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                 currentRoundNumber = initialGameState["state_data"]["round_number"];
             }
 
+            if (initialGameState["state"] === "passing") {
+                if (initialGameState["state_data"]["have_passed"]) {
+                    self.hand.removeAll(initialGameState["state_data"]["passed_cards"]);
+                }
+            }
+
             if (initialGameState["state"] === "playing") {
                 self.pile(
                     initialGameState["state_data"]["trick"]
