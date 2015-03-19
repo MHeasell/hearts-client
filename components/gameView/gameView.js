@@ -233,11 +233,25 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                     playerIndex));
 
             (function() {
-                var cardCount = self.hand().length;
                 var pile = self.pile();
-                self.leftPlayerCardCount(cardCount - (positionHasPlayed("left", pile) ? 1 : 0));
-                self.acrossPlayerCardCount(cardCount - (positionHasPlayed("across", pile) ? 1 : 0));
-                self.rightPlayerCardCount(cardCount - (positionHasPlayed("right", pile) ? 1 : 0));
+
+                if (initialGameState["state"] === "playing") {
+                    var cardCount = self.hand().length;
+                    cardCount += (positionHasPlayed("yours", pile) ? 1 : 0);
+                    self.leftPlayerCardCount(cardCount - (positionHasPlayed("left", pile) ? 1 : 0));
+                    self.acrossPlayerCardCount(cardCount - (positionHasPlayed("across", pile) ? 1 : 0));
+                    self.rightPlayerCardCount(cardCount - (positionHasPlayed("right", pile) ? 1 : 0));
+                }
+                else if (initialGameState["state"] === "passing") {
+                    self.leftPlayerCardCount(13);
+                    self.rightPlayerCardCount(13);
+                    self.acrossPlayerCardCount(13);
+                }
+                else {
+                    self.leftPlayerCardCount(0);
+                    self.rightPlayerCardCount(0);
+                    self.acrossPlayerCardCount(0);
+                }
             })();
         }
 
