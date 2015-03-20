@@ -3,6 +3,7 @@
     overflow: auto;
     padding: 0;
     margin: 0;
+    width: 95px;
 }
 
 .hand-vertical li {
@@ -76,13 +77,19 @@
     float: left;
 }
 
+.leftSide .hand-vertical {
+    transform: rotate(180deg);
+    transform-origin: 47.5px 50%;
+}
+
 .rightSide {
     text-align: center;
     float: right;
 }
 
-.leftSide .hand-vertical {
-    transform: rotate(180deg);
+.rightSide .hand-vertical {
+    margin-left: auto;
+    margin-right: 0;
 }
 
 .acrossSide {
