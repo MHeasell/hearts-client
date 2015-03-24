@@ -111,19 +111,15 @@
 
 .info-panel {
     text-align: center;
-    position: absolute;
-    top: -50px;
-    left: 0;
-    right: 0;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 10px;
     max-width: 300px;
 }
 
 .yourSide {
-    clear: both;
     text-align: center;
-    position: relative;
+    margin-top: -42px;
 }
 
 .actionPanel {
