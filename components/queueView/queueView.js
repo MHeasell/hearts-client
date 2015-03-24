@@ -1,9 +1,9 @@
 define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
 
     function QueueViewModel(params) {
-        this.name = ko.observable();
+        this.name = ko.observable("");
 
-        this.password = ko.observable();
+        this.password = ko.observable("");
 
         this.state = ko.observable("ready");
 
@@ -33,6 +33,18 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
 
             var name = this.name();
             var password = this.password();
+
+            name = name.trim();
+
+            if (name.length < 1) {
+                self.errorMessage("A name is required.");
+                return;
+            }
+
+            if (name.length > 20) {
+                self.errorMessage("Your name is too long. Try something shorter.");
+                return;
+            }
 
             self.state("queuing");
 

@@ -12,11 +12,11 @@
                     <div class="alert alert-danger" data-bind="text: errorMessage, visible: errorMessage() !== null"></div>
                     <div class="form-group">
                         <label for="playerNameInput" class="control-label">Name</label>
-                        <input type="text" id="playerNameInput" class="form-control" data-bind="value: name, enable: queueFormEnabled" />
+                        <input type="text" id="playerNameInput" class="form-control" maxlength="20" data-bind="value: name, enable: queueFormEnabled" />
                     </div>
                     <div class="form-group">
                         <label for="playerPassswordInput" class="control-label">Password (optional)</label>
-                        <input type="password" id="playerPassswordInput" class="form-control" data-bind="value: password, enable: queueFormEnabled" />
+                        <input type="password" id="playerPassswordInput" class="form-control" maxlength="50" data-bind="value: password, enable: queueFormEnabled" />
                         <p class="help-block">
                             Providing a password allows you to rejoin the game
                             if you lose connection.
