@@ -28,48 +28,34 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
 
         var connectFunction = params.connectFunction;
 
-        var playerService = params.playerService;
-
-        this.queue = function () {
+        this.queue = function() {
             self.errorMessage(null);
 
-            var promise = playerService.createPlayer(this.name(), this.password());
-            this.state("sendingRequest");
+            var name = this.name();
+            var password = this.password();
 
-            promise.done(function(data) {
-                onCreatedPlayer(data["id"], data["name"], data["ticket"]);
-            });
+            self.state("queuing");
 
-            promise.fail(function(xhr, textStatus) {
-                if (xhr.status === 409) {
-                    self.errorMessage("This name has already been taken.");
-                }
-                else {
-                    self.errorMessage("Could not create your account. Please try again later.");
-                }
-
-                self.state("ready");
-            });
-        };
-
-        function onCreatedPlayer(id, name, ticket) {
             var service = connectFunction();
 
             service.onConnect = function() {
-                self.state("queuing");
-                service.sendAuth(ticket)
+                service.sendAuth(name, password)
                     .done(function() {
                         // Do nothing.
                         // The server will notify us when we get a game.
                     })
                     .fail(function() {
+                        self.errorMessage("That name is in use and your password did not match.");
                         service.disconnect();
                     });
             };
 
+            service.onError = function() {
+                self.errorMessage("There was a problem connecting to the game server.");
+            };
+
             service.onDisconnect = function() {
                 self.state("ready");
-                self.errorMessage("Could not connect to the game server.");
             };
 
             service.onConnectedToGame = function() {
@@ -77,12 +63,11 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
                     "gameView",
                     {
                         service: service,
-                        playerService: playerService,
-                        ticket: ticket,
-                        id: id
+                        name: name,
+                        password: password
                     });
             };
-        }
+        };
     }
 
     return { viewModel: QueueViewModel, template: tmpl };

@@ -55,11 +55,10 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         // Initialization/game state loading logic -----------------------------
 
-        var playerId = params.id;
-        var authTicket = params.ticket;
+        var playerName = params.name;
+        var playerPassword = params.password;
         var manager = params.manager;
         var service = params.service;
-        var playerService = params.playerService;
 
         this.playerName = ko.observable();
         this.leftPlayerName = ko.observable();
@@ -133,7 +132,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
 
         function applyGameState(initialGameState) {
 
-            playerIndex = initialGameState["players"].indexOf(playerId);
+            playerIndex = initialGameState["players"].indexOf(playerName);
             leftPlayerIndex = (playerIndex + 1) % 4;
             rightPlayerIndex = (playerIndex + 3) % 4;
             acrossPlayerIndex = (playerIndex + 2) % 4;
@@ -163,7 +162,7 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
                     var p = initialGameState["players"][i];
                     if (p !== null) {
                         playersConnected[i](true);
-                        resolvePlayer(i, p);
+                        players[i](p);
                     }
                     else {
                         playersConnected[i](false);
@@ -320,17 +319,6 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             self.errorMessage(msg);
         }
 
-        function resolvePlayer(index, id) {
-            players[index]("Player #" + id);
-            playerService.getPlayer(id)
-                .done(function(data) {
-                    players[index](data["name"]);
-                })
-                .fail(function() {
-                    console.log("Failed to get player name for: " + id);
-                });
-        }
-
         function changeState(newState) {
             self.errorMessage(null);
             self.gameState(newState);
@@ -382,9 +370,9 @@ define(['jquery', 'knockout', 'text!./gameView.html', 'heartsUtil'],
             onReceiveNextPileCard(player, card);
         };
 
-        service.onPlayerConnected = function(playerIndex, playerId) {
+        service.onPlayerConnected = function(playerIndex, playerName) {
             playersConnected[playerIndex](true);
-            resolvePlayer(playerIndex, playerId);
+            players[playerIndex](playerName);
         };
 
         service.onPlayerDisconnected = function(playerIndex) {

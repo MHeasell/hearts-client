@@ -46,8 +46,8 @@ define(['jquery'], function($) {
             socket.close();
         };
 
-        this.sendAuth = function(ticket) {
-            var data = { "type": "auth", "ticket": ticket };
+        this.sendAuth = function(username, password) {
+            var data = { "type": "auth", "name": username, "password": password };
             return sendCommand(data);
         };
 
@@ -84,7 +84,7 @@ define(['jquery'], function($) {
         this.onStartRound = function(roundNumber, hand) {};
         this.onFinishPassing = function(receivedCards) {};
         this.onPlayCard = function(playerIndex, card) {};
-        this.onPlayerConnected = function(playerIndex, playerId) {};
+        this.onPlayerConnected = function(playerIndex, playerName) {};
         this.onPlayerDisconnected = function(playerIndex) {};
 
         socket.onopen = function() {
