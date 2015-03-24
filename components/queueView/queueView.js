@@ -55,6 +55,10 @@ define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
             };
 
             service.onDisconnect = function() {
+                if (self.errorMessage() === null) {
+                    self.errorMessage("Lost connection to the game server.");
+                }
+
                 self.state("ready");
             };
 
