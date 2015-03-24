@@ -26,7 +26,7 @@ define(['jquery'], function($) {
                 "game_id": 1,
                 "state": "passing",
                 "scores": [0, 0, 0, 0],
-                "players": [1, 2, 3, 4]
+                "players": ["Steve", "Joe", "Adam", "Bob"]
             });
 
             return defer.promise();
