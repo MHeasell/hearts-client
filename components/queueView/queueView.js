@@ -1,7 +1,7 @@
 define(["jquery", "knockout", "text!./queueView.html"], function($, ko, tmpl) {
 
     function QueueViewModel(params) {
-        this.name = ko.observable("Steve");
+        this.name = ko.observable();
 
         this.password = ko.observable();
 
