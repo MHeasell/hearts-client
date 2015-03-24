@@ -1,7 +1,9 @@
 .card {
     width: 70px;
     height: 95px;
-    background-size: 100% 100%;
+    background-size: 910px 380px;
+    background-image: url(cards/card-sprites.png);
+    background-repeat: no-repeat;
 }
 
 .card-h {
@@ -41,166 +43,168 @@
 
 .card-back {
     background-image: url(cards/cardBack_red3.png);
+    background-size: 100% 100%;
 }
 
 .card-back-h {
     background-image: url(cards/cardBack_red3_h.png);
+    background-size: 100% 100%;
 }
 
 /* auto-generated card list */
 .card-c1 {
-    background-image: url(cards/cardClubsA.png);
+    background-position: -840px 0px;
 }
 .card-c2 {
-    background-image: url(cards/cardClubs2.png);
+    background-position: 0px 0px;
 }
 .card-c3 {
-    background-image: url(cards/cardClubs3.png);
+    background-position: -70px 0px;
 }
 .card-c4 {
-    background-image: url(cards/cardClubs4.png);
+    background-position: -140px 0px;
 }
 .card-c5 {
-    background-image: url(cards/cardClubs5.png);
+    background-position: -210px 0px;
 }
 .card-c6 {
-    background-image: url(cards/cardClubs6.png);
+    background-position: -280px 0px;
 }
 .card-c7 {
-    background-image: url(cards/cardClubs7.png);
+    background-position: -350px 0px;
 }
 .card-c8 {
-    background-image: url(cards/cardClubs8.png);
+    background-position: -420px 0px;
 }
 .card-c9 {
-    background-image: url(cards/cardClubs9.png);
+    background-position: -490px 0px;
 }
 .card-c10 {
-    background-image: url(cards/cardClubs10.png);
+    background-position: -560px 0px;
 }
 .card-cj {
-    background-image: url(cards/cardClubsJ.png);
+    background-position: -630px 0px;
 }
 .card-cq {
-    background-image: url(cards/cardClubsQ.png);
+    background-position: -700px 0px;
 }
 .card-ck {
-    background-image: url(cards/cardClubsK.png);
+    background-position: -770px 0px;
 }
 .card-d1 {
-    background-image: url(cards/cardDiamondsA.png);
+    background-position: -840px -95px;
 }
 .card-d2 {
-    background-image: url(cards/cardDiamonds2.png);
+    background-position: 0px -95px;
 }
 .card-d3 {
-    background-image: url(cards/cardDiamonds3.png);
+    background-position: -70px -95px;
 }
 .card-d4 {
-    background-image: url(cards/cardDiamonds4.png);
+    background-position: -140px -95px;
 }
 .card-d5 {
-    background-image: url(cards/cardDiamonds5.png);
+    background-position: -210px -95px;
 }
 .card-d6 {
-    background-image: url(cards/cardDiamonds6.png);
+    background-position: -280px -95px;
 }
 .card-d7 {
-    background-image: url(cards/cardDiamonds7.png);
+    background-position: -350px -95px;
 }
 .card-d8 {
-    background-image: url(cards/cardDiamonds8.png);
+    background-position: -420px -95px;
 }
 .card-d9 {
-    background-image: url(cards/cardDiamonds9.png);
+    background-position: -490px -95px;
 }
 .card-d10 {
-    background-image: url(cards/cardDiamonds10.png);
+    background-position: -560px -95px;
 }
 .card-dj {
-    background-image: url(cards/cardDiamondsJ.png);
+    background-position: -630px -95px;
 }
 .card-dq {
-    background-image: url(cards/cardDiamondsQ.png);
+    background-position: -700px -95px;
 }
 .card-dk {
-    background-image: url(cards/cardDiamondsK.png);
+    background-position: -770px -95px;
 }
 .card-s1 {
-    background-image: url(cards/cardSpadesA.png);
+    background-position: -840px -190px;
 }
 .card-s2 {
-    background-image: url(cards/cardSpades2.png);
+    background-position: 0px -190px;
 }
 .card-s3 {
-    background-image: url(cards/cardSpades3.png);
+    background-position: -70px -190px;
 }
 .card-s4 {
-    background-image: url(cards/cardSpades4.png);
+    background-position: -140px -190px;
 }
 .card-s5 {
-    background-image: url(cards/cardSpades5.png);
+    background-position: -210px -190px;
 }
 .card-s6 {
-    background-image: url(cards/cardSpades6.png);
+    background-position: -280px -190px;
 }
 .card-s7 {
-    background-image: url(cards/cardSpades7.png);
+    background-position: -350px -190px;
 }
 .card-s8 {
-    background-image: url(cards/cardSpades8.png);
+    background-position: -420px -190px;
 }
 .card-s9 {
-    background-image: url(cards/cardSpades9.png);
+    background-position: -490px -190px;
 }
 .card-s10 {
-    background-image: url(cards/cardSpades10.png);
+    background-position: -560px -190px;
 }
 .card-sj {
-    background-image: url(cards/cardSpadesJ.png);
+    background-position: -630px -190px;
 }
 .card-sq {
-    background-image: url(cards/cardSpadesQ.png);
+    background-position: -700px -190px;
 }
 .card-sk {
-    background-image: url(cards/cardSpadesK.png);
+    background-position: -770px -190px;
 }
 .card-h1 {
-    background-image: url(cards/cardHeartsA.png);
+    background-position: -840px -285px;
 }
 .card-h2 {
-    background-image: url(cards/cardHearts2.png);
+    background-position: 0px -285px;
 }
 .card-h3 {
-    background-image: url(cards/cardHearts3.png);
+    background-position: -70px -285px;
 }
 .card-h4 {
-    background-image: url(cards/cardHearts4.png);
+    background-position: -140px -285px;
 }
 .card-h5 {
-    background-image: url(cards/cardHearts5.png);
+    background-position: -210px -285px;
 }
 .card-h6 {
-    background-image: url(cards/cardHearts6.png);
+    background-position: -280px -285px;
 }
 .card-h7 {
-    background-image: url(cards/cardHearts7.png);
+    background-position: -350px -285px;
 }
 .card-h8 {
-    background-image: url(cards/cardHearts8.png);
+    background-position: -420px -285px;
 }
 .card-h9 {
-    background-image: url(cards/cardHearts9.png);
+    background-position: -490px -285px;
 }
 .card-h10 {
-    background-image: url(cards/cardHearts10.png);
+    background-position: -560px -285px;
 }
 .card-hj {
-    background-image: url(cards/cardHeartsJ.png);
+    background-position: -630px -285px;
 }
 .card-hq {
-    background-image: url(cards/cardHeartsQ.png);
+    background-position: -700px -285px;
 }
 .card-hk {
-    background-image: url(cards/cardHeartsK.png);
+    background-position: -770px -285px;
 }
