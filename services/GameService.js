@@ -35,7 +35,6 @@ define(['jquery'], function($) {
             var mergedData = $.extend({}, data, { "command_id": id });
             var strData = JSON.stringify(mergedData);
             socket.send(strData);
-            console.log("Sent: " + strData);
 
             promises[id] = defer;
 
@@ -101,7 +100,7 @@ define(['jquery'], function($) {
 
         socket.onmessage = function(event) {
             var msg = JSON.parse(event.data);
-            console.log("Received: " + event.data);
+
             switch (msg["type"]) {
                 case "command_success":
                     onCommandSuccess(msg["command_id"]);
